@@ -24,8 +24,8 @@
                         </form>
                     </div>
                     <button class="comment_reply">답글 쓰기</button>
-                    <hr>
                 </div>
+                <hr>
                 <ol th:if="${comment.child!=null}" th:replace="::commentList(${comment.child})"></ol>
             </li>
         </ol>

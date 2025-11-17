@@ -11,7 +11,7 @@
 </head>
 <body>
     <header th:replace="layout/header :: header"></header>
-    <main>
+    <main id="detailPage">
         <section>
             <h3>게시글 상세</h3>
             <p><strong>제목 : </strong><span th:text="${post.title}"></span></p>
@@ -23,17 +23,17 @@
             <p><strong>내용 : </strong><br>
                 <span th:text="${post.content}"></span>
             </p>
-            <div sec:authorize="isAuthenticated()"
-                 th:if="${#authentication.name} == ${post.author.username}">
-                <a th:href="@{|/post/${post.id}/edit|}">수정</a>
-                <form th:action="@{|/post/${post.id}/delete|}" method="post" style="display:inline;">
-                    <button type="submit" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
-                </form>
+            <div class="center-link">
+                <div sec:authorize="isAuthenticated()"
+                     th:if="${#authentication.name} == ${post.author.username}">
+                    <a th:href="@{|/post/${post.id}/edit|}">수정</a>
+                    <form th:action="@{|/post/${post.id}/delete|}" method="post" style="display:inline;">
+                        <button type="submit" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+                    </form>
+                </div>
+                <a th:href="@{/post}">목록</a>
             </div>
-            <a th:href="@{/post}">목록</a>
-            <hr>
         </section>
-
         <section id="commentSection">
             <p>댓글 <span th:text="${comments.size()}"></span></p>
             <div class="comment_input">
@@ -48,11 +48,9 @@
                     <hr>
                 </form>
             </div>
-
             <div id="comments">
                 <div th:replace="fragment/commentList ::commentList(${comments})"></div>
             </div>
-    <!--        <div id="comment-sec"></div>-->
         </section>
     </main>
 </body>

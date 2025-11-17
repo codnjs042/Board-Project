@@ -31,7 +31,6 @@ $(function(){
         }
     });
 
-
     $(document).on("click", ".comment_edit", function(){
         if($(this).closest("li").attr("data-mode")=="read"){
             if($("div").hasClass("new_comment_input")){
@@ -44,8 +43,10 @@ $(function(){
             backup = li.html();
             li.html(backup);
             var text = li.children("p").children("span").eq(1).text();
-            var input = $(".comment_input").clone(true, true).removeClass("comment_input").addClass("new_comment_input");
+            var input = $(".comment_input").clone(true, true)
+            input.removeClass("comment_input").addClass("new_comment_input");
             input.find("textarea").val(text);
+            input.find("button").after("<button>취소</button>");
             var id = li.attr("data-id");
             input.find("form").append(`<input type="hidden" name="editId" value="${id}">`);
             li.html(input);
@@ -65,7 +66,8 @@ $(function(){
                 $(".comment_edit").attr("data-mode", "read");
             }
             $(this).text("답글 닫기");
-            var input = $(".comment_input").clone(true, true).addClass("new_comment_input").addClass("new_comment_input");
+            var input = $(".comment_input").clone(true, true)
+            input.removeClass("comment_input").addClass("new_comment_input");
             var id = $(this).closest("li").attr("data-id");
             input.find("form").append(`<input type="hidden" name="parentId" value="${id}">`);
             $(this).after(input);
@@ -73,6 +75,11 @@ $(function(){
             $(this).text("답글 쓰기");
             $(this).next(".comment_input").remove();
         }
+    });
+
+    $(document).on("click", "button:contains('취소')", function(){
+        if (li) li.html(backup);
+        $(".comment_edit").attr("data-mode", "read");
     });
 });
 //$(function(){
