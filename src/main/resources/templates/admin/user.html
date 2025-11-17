@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymlealf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>유저관리</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script th:src="@{/js/motion.js}"></script>
+</head>
+<body>
+    <header th:replace="layout/header :: header"></header>
+    <main id="adminUser" class="adminPages">
+        <div>
+            <h2>유저 관리</h2>
+        </div>
+        <div>
+            <nav>
+                <ul>
+                    <li><a th:href="@{/admin}">유저 관리</a></li>
+                    <li><a th:href="@{admin/post}">게시글 관리</a></li>
+                    <li><a th:href="@{/admin/dashboard}">서비스 통계</a></li>
+                </ul>
+            </nav>
+            <section>
+                <p>user total : <span th:text="${userPage.totalElements}"></span></p>
+                <form th:action="@{/admin/user/delete}" method="post">
+                    <div th:if="${error}">
+                        <p th:text="${error}"></p>
+                    </div>
+                    <button type="submit" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+                    <table class="user-list">
+                        <thead>
+                        <tr>
+                            <th><input type="checkbox"></th>
+                            <th>번호</th>
+                            <th>아이디</th>
+                            <th>닉네임</th>
+                            <th>권한</th>
+                            <th>가입일</th>
+                            <th>관리상태</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="user, iterStat : ${userPage.content}">
+                            <td>
+                                <input type="checkbox" name="id" th:value="${user.id}">
+                                <input type="hidden" name="role" th:value="${user.role}" disabled>
+                            </td>
+                            <td th:text="${iterStat.index+1}"></td>
+                            <td th:text="${user.username}"></td>
+                            <td th:text="${user.nickname}"></td>
+                            <td th:text="${user.role.name()=='SUPER_ADMIN'?'슈퍼관리자':user.role.name()=='ADMIN'?'관리자':'사용자'}"></td>
+                            <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                            <td th:text="${user.status.name()=='ACTIVE'?'활성화':user.status.name()=='PENDING'?'비활성 대기중':'비활성화'}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </form>
+                <div class="pagination">
+                    <span th:if="${userPage.hasPrevious()}">
+                        <a th:href="@{/admin/user(page=${userPage.number-1})}">이전</a>
+                    </span>
+                    <span th:if="${userPage.totalPages}>0"
+                          th:each="i : ${#numbers.sequence(0, userPage.totalPages-1)}">
+                          <a th:href="@{/admin/user(page=${i}, keyword=${keyword})}"
+                             th:text="${i+1}"
+                             th:classappend="${i==userPage.number ? 'active' : ''}">
+                          </a>
+                    </span>
+                    <span th:if="${userPage.hasNext()}">
+                          <a th:href="@{/admin/user(page=${userPage.number+1})}">다음</a>
+                    </span>
+                </div>
+
+                <form th:action="@{/admin}" method="get">
+                    <input type="text" name="keyword" placeholder="아이디 or 닉네임 입력하세요" th:value="${keyword}"/>
+                    <button type="submit">검색</button>
+                </form>
+            </section>
+        </div>
+    </main>
+</body>
+</html>

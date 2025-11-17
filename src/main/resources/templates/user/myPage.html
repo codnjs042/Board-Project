@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header th:replace="layout/header :: header"></header>
+    <main id="myPage" class="myPages">
+        <div>
+            <h2>마이페이지</h2>
+        </div>
+        <div>
+            <nav>
+                <ul>
+                    <li><a th:href="@{/user/myPage}">회원 정보 변경</a></li>
+                    <li><a th:href="@{/user/myHistory}">유저 활동 내역</a></li>
+                    <li><a th:href="@{/user/delete}">계정 삭제</a></li>
+                </ul>
+            </nav>
+            <section>
+                <form th:action="@{/user/myPage}" method="post">
+                    <table>
+                        <thead>
+                            <tr><th colspan="2"><h3><span th:text="${user.nickname}"></span>님의 정보</h3></th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><label>아이디</label></td>
+                                <td><input type="text" name="username" th:value="${user.username}" disabled></td>
+                            </tr>
+                            <tr>
+                                <td><label>비밀번호</label></td>
+                                <td>
+                                    <a th:href="@{/user/pwPage}" th:if="${user.role.name()!='KAKAO_USER'}">변경</a>
+                                    <span th:unless="${user.role.name()!='KAKAO_USER'}">변경 불가</span>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td><label for="nickname">닉네임</label></td>
+                            <td><input type="text" id="nickname" name="nickname" th:value="${user.nickname}" required th:disabled="${user.role.name()=='KAKAO_USER'}"></td>
+                            <td><button type="submit" th:disabled="${user.role.name()=='KAKAO_USER'}"><span th:text="${user.role.name()=='KAKAO_USER'?'카카오 유저는 변경 불가':'변경'}"></span></button></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </section>
+        </div>
+    </main>
+</body>
+</html>

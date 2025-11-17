@@ -1,0 +1,103 @@
+@charset "utf-8";
+
+*{color:gray;}
+body {margin: 0;}
+a{text-decoration-line:none;}
+ol,ul{list-style-type:none;}
+button{cursor:pointer;}
+button:disabled{cursor:not-allowed;}
+.btn-text{all: unset;}
+.post-list th, .user-list th{background:gray; color:white;}
+.post-list td, .user-list td{border: 1px dotted gray;}
+.post-list, .user-list{border:none;}
+
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header{
+    display: flex;
+    position: sticky;
+    top: 0;
+    height: 15vh;
+    justify-content: space-around;
+    background: #f5f5f5;
+}
+
+main{
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#main{
+    height: 50%;
+    width: 50%;
+    background-image: url("../img/post.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#main a{ color: white; }
+
+button, input, textarea{
+    border: none;
+}
+
+#login, #signup {
+    background: lightgray;
+    border-radius: 20px;
+    padding: 20px 50px 50px 50px;
+}
+
+#login tr>*, #signup tr>*{padding: 10px;}
+
+#login th, #signup th, #signup tr:nth-child(3) td{padding-bottom: 50px;}
+
+#login tr:last-child td,
+#signup tr:last-child td,
+#signup tr:nth-last-child(2) td{text-align: center;}
+
+#login input, #signup input{border: none;}
+
+#login button, #signup button{
+    height: 60px;
+    padding: 0 20px;
+    font-size: 15px;
+    background: gray;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+.myPages, .adminPages{
+    display: flex;
+    flex-direction: column;
+}
+
+.myPages>div, .adminPages>div{
+    display: flex;
+}
+
+.myPages ul, .adminPages ul{
+    display: flex;
+    flex-direction: column;
+    background: gray;
+}
+
+.myPages ul li, .adminPages ul li{
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.myPages ul a, .adminPages ul a{color: white; font-size: 20px;}

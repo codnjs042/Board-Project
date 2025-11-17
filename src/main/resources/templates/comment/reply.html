@@ -1,0 +1,24 @@
+<!DOCTYPE "html">
+<html xmlns:th="http://www.thymlealf.org">
+<head>
+    <meta charset="utf-8">
+    <title>답글 작성</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="layout/header :: header"></div>
+<main>
+    <h3>답글 작성</h3>
+    <p>
+        <span th:text="${comment.authorName}"></span><br>
+        <span th:text="${comment.comment}"></span>
+        <span th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+        <small th:if="${comment.createdAt!=comment.updatedAt}" th:text="|${#temporals.format(comment.updatedAt, 'yyyy-MM-dd HH:mm')}에 수정됨|"></small>
+    </p><br>
+    <form th:action="@{|/post/${post.id}/comment|}" method="post">
+        <label> -> 댓글 : <textarea rows="5" cols="50" ></textarea></label><br>
+        <button type="submit">작성</button>
+    </form>
+</main>
+</body>
+</html>

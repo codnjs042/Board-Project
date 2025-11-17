@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 상세</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script th:src="@{/js/motion.js}"></script>
+</head>
+<body>
+    <header th:replace="layout/header :: header"></header>
+    <main>
+        <section>
+            <h3>게시글 상세</h3>
+            <p><strong>제목 : </strong><span th:text="${post.title}"></span></p>
+            <p><strong>작성자 : </strong><span th:text="|${post.authorName}(${#strings.substring(post.author.username, 0, 4)}${'*'.repeat(#strings.length(post.author.username)-4)})|"></span></p>
+            <p><strong>작성일 : </strong>
+                <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                <small th:if="${post.updatedAt!=null}" th:text="|${#temporals.format(post.updatedAt, 'yyyy-MM-dd HH:mm')}에 수정됨|"></small>
+            </p>
+            <p><strong>내용 : </strong><br>
+                <span th:text="${post.content}"></span>
+            </p>
+            <div sec:authorize="isAuthenticated()"
+                 th:if="${#authentication.name} == ${post.author.username}">
+                <a th:href="@{|/post/${post.id}/edit|}">수정</a>
+                <form th:action="@{|/post/${post.id}/delete|}" method="post" style="display:inline;">
+                    <button type="submit" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+                </form>
+            </div>
+            <a th:href="@{/post}">목록</a>
+            <hr>
+        </section>
+
+        <section id="commentSection">
+            <p>댓글 <span th:text="${comments.size()}"></span></p>
+            <div class="comment_input">
+                <form th:action="@{|/post/${post.id}/comment|}" method="post">
+                    <textarea name="comment" rows="5" cols="50" required
+                              th:disabled="${post.type.name()=='NOTICE' or !#authorization.expression('isAuthenticated()')}"
+                              th:placeholder="${post.type.name()=='NOTICE' ? '공지글에는 댓글을 작성할 수 없습니다' : (!#authorization.expression('isAuthenticated()') ? '로그인 후 댓글 작성 가능합니다' : '댓글을 입력하세요')}"></textarea>
+                    <button type="submit"
+                            th:disabled="${post.type.name()=='NOTICE' or !#authorization.expression('isAuthenticated()')}">
+                        작성
+                    </button>
+                    <hr>
+                </form>
+            </div>
+
+            <div id="comments">
+                <div th:replace="fragment/commentList ::commentList(${comments})"></div>
+            </div>
+    <!--        <div id="comment-sec"></div>-->
+        </section>
+    </main>
+</body>
+</html>

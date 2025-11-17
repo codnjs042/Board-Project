@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <head>
+        <meta charset="UTF-8">
+        <title>마이페이지</title>
+        <link rel="stylesheet" th:href="@{/css/style.css}">
+    </head>
+    <body>
+        <header th:replace="layout/header :: header"></header>
+        <main id="pwPage" class="myPages">
+            <div>
+                <h2>마이페이지</h2>
+            </div>
+            <div>
+                <nav>
+                    <ul>
+                        <li><a th:href="@{/user/myPage}">회원 정보 변경</a></li>
+                        <li><a th:href="@{/user/myHistory}">유저 활동 내역</a></li>
+                        <li><a th:href="@{/user/delete}">계정 삭제</a></li>
+                    </ul>
+                </nav>
+                <section><!--에러처리안함-->
+                    <form th:action="@{/user/pwPage}" method="post">
+                        <table>
+                            <thead>
+                                <tr><th colspan="2"><h3>비밀번호 변경</h3></th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><label for="currentPw">현재 비밀번호 입력</label></td>
+                                    <td><input type="password" id="currentPw" name="currentPw" required></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="newPw">새 비밀번호 입력</label></td>
+                                    <td><input type="password" id="newPw" name="newPw" required></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="confirmPw">새 비밀번호 확인</label></td>
+                                    <td><input type="password" id="confirmPw" name="confirmPw" required></td>
+                                </tr>
+                                <tr><td colspan="2"><button type="submit" th:disabled="{user.role.name()=='KAKAO_USER'}">변경</button></td></tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </section>
+            </div>
+        </main>
+    </body>
+</html>

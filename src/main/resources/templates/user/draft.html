@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>임시 저장</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header th:replace="layout/header :: header"></header>
+    <main>
+        <h3>임시 저장 목록</h3>
+        <section>
+            <ol th:each="post, iterStat : ${draft}">
+                <li>
+                    <span th:text="${iterStat.count}"></span>
+                    <a th:href="@{/post/write(id=${post.id})}" th:text="${post.title}"></a>
+                    <small>
+                        (마지막 수정일 : <span th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd HH:mm')}"></span>)
+                    </small>
+                </li>
+            </ol>
+        </section>
+        <a th:href="@{/post/write}">뒤로가기</a>
+        <a th:href="@{/post}">목록</a>
+    </main>
+</body>
+</html>

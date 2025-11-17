@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<!--<html lang="en">-->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <main>
+        <ol th:fragment="commentList(commentList)">
+            <li th:each="comment : ${commentList}" data-mode="read" th:data-id="${comment.id}">
+                <p>
+                    <span th:text="${comment.authorName}"></span><br>
+                    <span th:text="${comment.comment}"></span>
+                    <span th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                    <small th:if="${comment.updatedAt!=null}" th:text="|${#temporals.format(comment.updatedAt, 'yyyy-MM-dd HH:mm')}에 수정됨|"></small>
+                </p><br>
+
+                <div sec:authorize="isAuthenticated()">
+                    <div th:if="${#authentication.name == comment.author.username}">
+                        <button class="comment_edit">수정</button>
+                        <form th:action="@{|/post/${comment.post.id}/comment/${comment.id}/delete|}" method="post" style="display:inline;">
+                            <button type="submit" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+                        </form>
+                    </div>
+                    <button class="comment_reply">답글 쓰기</button>
+                    <hr>
+                </div>
+                <ol th:if="${comment.child!=null}" th:replace="::commentList(${comment.child})"></ol>
+            </li>
+        </ol>
+    </main>
+</body>

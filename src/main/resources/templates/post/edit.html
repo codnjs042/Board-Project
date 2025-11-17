@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>글 수정</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header th:replace="layout/header :: header"></header>
+    <main>
+    <h3>글 수정</h3>
+    <form th:action="@{|/post/${post.id}/edit|}" method="post">
+        <div th:if="${user.role.name()=='ADMIN'}">
+            <label>일반<input type="radio" name="type" value="NORMAL" th:checked="${post.type.name() == 'NORMAL'}"></label>
+            <label>공지<input type="radio" name="type" value="NOTICE" th:checked="${post.type.name() == 'NOTICE'}"></label>
+        </div>
+        <label>제목:
+            <input type="text" name="title" th:value="${post.title}" required>
+        </label>
+        <br><br>
+        <label>내용:<br>
+            <textarea name="content" rows="10" cols="50" th:text="${post.content}" required></textarea>
+        </label>
+        <br><br>
+        <button type="submit">수정 완료</button>
+        <a th:href="@{|/post/${post.id}|}">취소</a>
+        <a th:href="@{/post}">목록</a>
+    </form>
+    </main>
+</body>
+</html>

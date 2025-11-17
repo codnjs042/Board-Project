@@ -1,0 +1,38 @@
+package com.example.demo.post.dto;
+
+import com.example.demo.post.domain.Post;
+import com.example.demo.post.domain.PostState;
+import com.example.demo.post.domain.PostType;
+import com.example.demo.user.domain.User;
+import lombok.Getter;
+
+import java.time.LocalDateTime;
+
+@Getter
+public class PostResponseDto {
+    private Long id;
+    private String title;
+    private String content;
+    private User author;
+    private String authorName;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private PostState state;
+    private PostType type;
+
+    public PostResponseDto(Post post){
+        this.id=post.getId();
+        this.title=post.getTitle();
+        this.content=post.getContent();
+        this.author=post.getAuthor();
+        this.authorName=post.getAuthorName();
+        this.createdAt=post.getCreatedAt();
+        this.updatedAt=post.getUpdatedAt();
+        this.state=post.getState();
+        this.type=post.getType();
+    }
+
+    public static PostResponseDto from(Post post){
+        return new PostResponseDto(post);
+    }
+}

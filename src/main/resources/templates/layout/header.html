@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!--<html lang="en">-->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<header>
+    <div>
+        <h1><a th:href="@{/}">MODU</a></h1>
+    </div>
+    <div>
+        <nav>
+            <div sec:authorize="isAuthenticated()">
+                <small>반갑습니다, <span th:text="${user.nickname}"></span>님!</small>
+                <a th:if="${user.role.name=='ADMIN'}" th:href="@{/admin}">관리자페이지</a>
+                <a th:href="@{/user/myPage}">마이페이지</a>
+                <form th:action="@{/logout}" method="post">
+                    <a th:href="@{/logout}">로그아웃</a>
+                </form>
+            </div>
+            <div sec:authorize="isAnonymous()">
+                <a th:href="@{/user/login}">로그인</a>
+                <a th:href="@{/user/signup}">회원가입</a>
+            </div>
+        </nav>
+    </div>
+    <!--    <div th:if="${session.loginUser!=null}">-->
+    <!--        <p th:text="'안녕하세요, ' + ${session.loginUser.nickname} + '님!'"></p>-->
+    <!--        <a th:href="@{/user/logout}">로그아웃</a>-->
+    <!--    </div>-->
+
+    <!--    <div th:unless="@{session.loginUser!=null}">-->
+    <!--        <a th:href="/user/login">로그인</a>-->
+    <!--        <a th:href="/user/signup">회원가입</a>-->
+    <!--    </div>-->
+</header>

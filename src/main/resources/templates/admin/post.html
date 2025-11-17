@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymlealf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글관리</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script th:src="@{/js/motion.js}"></script>
+</head>
+<body>
+<header th:replace="layout/header :: header"></header>
+<main id="adminPost" class="adminPages">
+    <div>
+        <h2>게시글 관리</h2>
+    </div>
+    <div>
+        <nav>
+            <ul>
+                <li><a th:href="@{/admin}">유저 관리</a></li>
+                <li><a th:href="@{admin/post}">게시글 관리</a></li>
+                <li><a th:href="@{/admin/dashboard}">서비스 통계</a></li>
+            </ul>
+        </nav>
+        <section>
+            <p>user total : <span th:text="${postPage.totalElements}"></span></p>
+            <form th:action="@{/admin/post/delete}" method="post">
+                <div th:if="${error}">
+                    <p th:text="${error}"></p>
+                </div>
+                <button type="submit" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+                <table class="user-list">
+                    <thead>
+                    <tr>
+                        <th><input type="checkbox"></th>
+                        <th>번호</th>
+                        <th>제목</th>
+                        <th>내용</th>
+                        <th>아이디</th>
+                        <th>닉네임</th>
+                        <th>작성일</th>
+                        <th>수정일</th>
+                        <th>공개여부</th>
+                        <th>게시글유형</th>
+                        <th>관리상태</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="post, iterStat : ${postPage.content}">
+                        <td><input type="checkbox" name="id" th:value="${post.id}"></td>
+                        <td th:text="${iterStat.index+1}"></td>
+                        <td th:text="${post.title}"></td>
+                        <td th:text="${post.content.length()<30?post.content:post.content.substring(0,30)+'...'}"></td>
+                        <td th:text="${post.author.username}"></td>
+                        <td th:text="${post.authorName}"></td>
+                        <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                        <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                        <td th:text="${post.state.name()=='PUBLISHED'?'공개':'임시'}"></td>
+                        <td th:text="${post.type.name()=='NOTICE'?'공지':'일반'}"></td>
+                        <td th:text="${post.status.name()=='ACTIVE'?'활성화':'비활성화'}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </form>
+            <div class="pagination">
+                    <span th:if="${postPage.hasPrevious()}">
+                        <a th:href="@{/admin/post(page=${userPage.number-1})}">이전</a>
+                    </span>
+                <span th:if="${postPage.totalPages}>0"
+                      th:each="i : ${#numbers.sequence(0, postPage.totalPages-1)}">
+                          <a th:href="@{/admin/post(page=${i}, keyword=${keyword})}"
+                             th:text="${i+1}"
+                             th:classappend="${i==postPage.number ? 'active' : ''}">
+                          </a>
+                    </span>
+                <span th:if="${postPage.hasNext()}">
+                          <a th:href="@{/admin/post(page=${postPage.number+1})}">다음</a>
+                    </span>
+            </div>
+
+            <form th:action="@{/admin/post}" method="get">
+                <select name="type">
+                    <option value="user">아이디+닉네임</option>
+                    <option value="post">제목+내용</option>
+                </select>
+                <input type="text" name="keyword" placeholder="검색어를 입력하세요" th:value="${keyword}"/>
+                <button type="submit">검색</button>
+            </form>
+        </section>
+    </div>
+</main>
+</body>
+</html>
