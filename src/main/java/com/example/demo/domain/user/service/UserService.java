@@ -64,10 +64,10 @@ public class UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다"));
         if(!user.getUsername().equals(username)){
-            throw new IllegalStateException("본인 닉네임만 수정할 수 있습니다");
+            throw new IllegalArgumentException("본인 닉네임만 수정할 수 있습니다");
         }
         if(user.getRole()==UserRole.KAKAO_USER){
-            throw new IllegalStateException("카카오 유저는 닉네임만 수정할 수 없습니다");
+            throw new IllegalArgumentException("카카오 유저는 닉네임만 수정할 수 없습니다");
         }
 
         user.updateNickname(nickname);
@@ -78,10 +78,10 @@ public class UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다"));
         if(!user.getUsername().equals(username)){
-            throw new IllegalStateException("본인 비밀번호만 수정할 수 있습니다");
+            throw new IllegalArgumentException("본인 비밀번호만 수정할 수 있습니다");
         }
         if(user.getRole()==UserRole.KAKAO_USER){
-            throw new IllegalStateException("카카오 유저는 닉네임만 수정할 수 없습니다");
+            throw new IllegalArgumentException("카카오 유저는 닉네임만 수정할 수 없습니다");
         }
         if(!passwordEncoder.matches(pwDto.getCurrentPw(), user.getPassword())){
             throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
