@@ -7,6 +7,7 @@ import com.example.demo.user.domain.User;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 public class PostResponseDto {
@@ -15,6 +16,7 @@ public class PostResponseDto {
     private String content;
     private User author;
     private String authorName;
+    private List<User> likes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private PostState state;
@@ -26,6 +28,7 @@ public class PostResponseDto {
         this.content=post.getContent();
         this.author=post.getAuthor();
         this.authorName=post.getAuthorName();
+        this.likes=post.getLikes();
         this.createdAt=post.getCreatedAt();
         this.updatedAt=post.getUpdatedAt();
         this.state=post.getState();

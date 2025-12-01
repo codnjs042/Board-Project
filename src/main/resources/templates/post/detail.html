@@ -32,6 +32,13 @@
                     </form>
                 </div>
                 <a th:href="@{/post}">목록</a>
+                <form th:action="@{|/post/${post.id}|}" method="post">
+                    <button type="submit"
+                            th:disabled="${#authentication.name} == ${post.author.username}"
+                            th:data-like="${myLike}">
+                        좋아요 <span th:text="${#lists.isEmpty(post.likes)?0:#lists.size(post.likes)}"></span>
+                    </button>
+                </form>
             </div>
         </section>
         <section id="commentSection">

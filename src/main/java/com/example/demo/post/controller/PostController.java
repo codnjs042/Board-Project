@@ -6,6 +6,7 @@ import com.example.demo.post.domain.PostState;
 import com.example.demo.post.dto.PostRequestDto;
 import com.example.demo.post.dto.PostResponseDto;
 import com.example.demo.post.service.PostService;
+import com.example.demo.user.domain.User;
 import com.example.demo.user.dto.UserResponseDto;
 import com.example.demo.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -78,6 +79,16 @@ public class PostController {
         List<CommentResponseDto> comments = commentService.findAll(id);
         model.addAttribute("comments", comments);
         return "post/detail";
+    }
+
+    @PostMapping("/{id}")
+    public String postLike(@PathVariable Long id, Principal principal, Model model){
+        postService.likeToggle(id, principal.getName());
+
+        boolean myLike = postService.myLike(id, principal.getName());
+        model.addAttribute("myLike", myLike);
+
+        return "redirect:/post/{id}";
     }
 
     @GetMapping("/{id}/edit")

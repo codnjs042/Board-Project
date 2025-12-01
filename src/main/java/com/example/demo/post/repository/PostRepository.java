@@ -3,13 +3,17 @@ package com.example.demo.post.repository;
 import com.example.demo.post.domain.Post;
 import com.example.demo.post.domain.PostState;
 import com.example.demo.post.domain.PostStatus;
+import com.example.demo.user.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
+    Optional<Post> findByIdAndLikes(Long id, User user);
+
     // 공개된 모든 유저 목록
     Page<Post> findByStatusAndStateOrderByTypeDesc(PostStatus status, PostState state, Pageable pageable);
 

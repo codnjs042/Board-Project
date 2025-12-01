@@ -1,4 +1,22 @@
 $(function(){
+    $("button:contains('좋아요')").on("click", function(){
+        if($(this).prop("data-like")){
+            $(this).css({
+            "border":"none",
+            "background":"gray",
+            "color":"white"
+            })
+        }
+        else{
+            $(this).css({
+                "border":"1px solid gray",
+                "background":"none",
+                "color":"gray"
+            })
+        }
+
+    })
+
     $("th>input[type='checkbox']").on("click", function(){
         if ($(this).prop("checked")){
             $(this).prop("checked", true);

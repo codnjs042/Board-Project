@@ -7,6 +7,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="posts")
@@ -43,6 +45,9 @@ public class Post {
     @Column(nullable = false)
     private int view;
 
+    @ManyToMany
+    private List<User> likes;
+
     @Enumerated(EnumType.STRING)
     private PostState state;
 
@@ -66,4 +71,11 @@ public class Post {
     public void updateStatus(PostStatus status){
         this.status=status;
     }
+
+    public void toggleLike(User user){
+        if(this.getLikes().contains(user))
+            this.likes.remove(user);
+        else this.likes.add(user);
+    }
 }
+
