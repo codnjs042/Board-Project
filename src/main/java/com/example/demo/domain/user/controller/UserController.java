@@ -109,8 +109,8 @@ public class UserController {
 
         Page<PostResponseDto> PostPage
                 = (keyword!=null && !keyword.isBlank())
-                ? userService.searchPosts(principal.getName(), PostState.PUBLISHED, keyword, type, page)
-                : userService.findAll(principal.getName(), PostState.PUBLISHED, page);
+                ? userService.searchMyPost(principal.getName(), PostState.PUBLISHED, keyword, type, page)
+                : userService.findAllMyPost(principal.getName(), PostState.PUBLISHED, page);
         model.addAttribute("postPage", PostPage);
         model.addAttribute("keyword", keyword);
         return "user/myHistory";

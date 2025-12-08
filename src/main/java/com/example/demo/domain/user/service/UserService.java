@@ -26,6 +26,7 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final PostService postService;
 
+    @Transactional
     public void signup(UserSignupRequestDto dto){
         Optional<User> existing = userRepository.findByUsername(dto.getUsername());
 
@@ -96,12 +97,14 @@ public class UserService {
         user.updatePassword(encodePw);
     }
 
-    public Page<PostResponseDto> findAll(String username, PostState status, int page) {
-        return postService.findAll(username, status, page);
+    @Transactional(readOnly = true)
+    public Page<PostResponseDto> findAllMyPost(String username, PostState status, int page) {
+        return postService.findAllMyPost(username, status, page);
     }
 
-    public Page<PostResponseDto> searchPosts(String username, PostState status, String keyword, String type, int page) {
-        return postService.searchPosts(username, status, keyword, type, page);
+    @Transactional(readOnly = true)
+    public Page<PostResponseDto> searchMyPost(String username, PostState status, String keyword, String type, int page) {
+        return postService.searchMyPost(username, status, keyword, type, page);
     }
 
     @Transactional
@@ -113,23 +116,11 @@ public class UserService {
         user.updateStatus(dto.getStatus());
     }
 
+    @Transactional
     public UserStatusResponseDto userStatus(String username){
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다"));
         return new UserStatusResponseDto(user);
-    }
-
-    @Scheduled(cron = "0 0 0 * * ?") // 매일 자정
-    @Transactional
-    public void disablePendingUsers() {
-        LocalDateTime now = LocalDateTime.now();
-        List<User> users = userRepository.findByStatus(UserStatus.PENDING);
-
-        for(User user : users){
-            if(user.getPendingAt().toLocalDate().plusDays(30).atTime(23, 59, 59).isBefore(now)){
-                user.updateStatus(UserStatus.DISABLED);
-            }
-        }
     }
 
 //    public UserResponseDto login(UserLoginRequestDto dto){

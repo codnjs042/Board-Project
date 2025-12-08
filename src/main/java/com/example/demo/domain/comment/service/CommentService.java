@@ -25,7 +25,7 @@ public class CommentService {
     @Transactional
     public void create(Long parentId, Long postId, CommentRequestDto dto, String username){
         User author = userRepository.findByUsername(username)
-                .orElseThrow(()->new IllegalArgumentException("로그인 사용자를 찾을 수 없습니다"));
+                .orElseThrow(()-> new IllegalArgumentException("로그인 사용자를 찾을 수 없습니다"));
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
@@ -33,6 +33,7 @@ public class CommentService {
         if (post.getType()== PostType.NOTICE){
             throw new IllegalArgumentException("공지글에는 댓글을 작성할 수 없습니다");
         }
+
         Comment comment = Comment.builder()
                 .comment(dto.getComment())
                 .author(author)

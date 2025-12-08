@@ -62,14 +62,20 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PostResponseDto> findAll(PostState state, int page){
+    public Page<PostResponseDto> findAllPost(PostState state, int page){
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
+        if(state!=PostState.PUBLISHED){
+            throw new IllegalStateException("정상 업로드된 게시글만 열람 가능합니다");
+        }
         return postRepository.findByStatusAndStateOrderByTypeDesc(PostStatus.ACTIVE, state, pageable).map(PostResponseDto::from);
     }
 
     @Transactional(readOnly = true)
-    public Page<PostResponseDto> findAll(String username, PostState state, int page){
+    public Page<PostResponseDto> findAllMyPost(String username, PostState state, int page){
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
+        if(state!=PostState.PUBLISHED){
+            throw new IllegalStateException("정상 업로드된 게시글만 열람 가능합니다");
+        }
         return postRepository.findByStatusAndAuthor_UsernameAndState(PostStatus.ACTIVE, username, state, pageable).map(PostResponseDto::from);
     }
 
@@ -82,8 +88,12 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PostResponseDto> searchPosts(PostState state, String keyword, String type, int page){
+    public Page<PostResponseDto> searchPost(PostState state, String keyword, String type, int page){
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
+
+        if(state!=PostState.PUBLISHED){
+            throw new IllegalStateException("정상 업로드된 게시글만 열람 가능합니다");
+        }
 
         Page<Post> result = switch (type) {
             case "title" -> postRepository.findByStatusAndStateAndTitleContaining(PostStatus.ACTIVE, state, keyword, pageable);
@@ -96,8 +106,12 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PostResponseDto> searchPosts(String username, PostState state, String keyword, String type, int page){
+    public Page<PostResponseDto> searchMyPost(String username, PostState state, String keyword, String type, int page){
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
+
+        if(state!=PostState.PUBLISHED){
+            throw new IllegalStateException("정상 업로드된 게시글만 열람 가능합니다");
+        }
 
         Page<Post> result = switch (type) {
             case "title" -> postRepository.findByStatusAndAuthor_UsernameAndStateAndTitleContaining(PostStatus.ACTIVE, username, state, keyword, pageable);
@@ -142,6 +156,7 @@ public class PostService {
     public void delete(Long id, String username){
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다"));
+
         if(!post.getAuthor().getUsername().equals(username)){
             throw new IllegalStateException("작성자만 삭제할 수 있습니다");
         }

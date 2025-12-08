@@ -5,6 +5,7 @@ import com.example.demo.domain.admin.dto.PostAdminResponseDto;
 import com.example.demo.domain.admin.dto.UserAdminRequestDto;
 import com.example.demo.domain.admin.dto.UserAdminResponseDto;
 import com.example.demo.domain.post.domain.Post;
+import com.example.demo.domain.post.domain.PostState;
 import com.example.demo.domain.post.domain.PostStatus;
 import com.example.demo.domain.post.repository.PostRepository;
 import com.example.demo.domain.user.domain.User;

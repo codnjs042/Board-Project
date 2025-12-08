@@ -60,8 +60,8 @@ public class PostController {
         }
         Page<PostResponseDto> postPage
                 = (keyword!=null && !keyword.isBlank())
-                ? postService.searchPosts(PostState.PUBLISHED, keyword, type, page)
-                : postService.findAll(PostState.PUBLISHED, page);
+                ? postService.searchPost(PostState.PUBLISHED, keyword, type, page)
+                : postService.findAllPost(PostState.PUBLISHED, page);
         model.addAttribute("postPage", postPage);
         model.addAttribute("keyword", keyword);
         return "post/list";

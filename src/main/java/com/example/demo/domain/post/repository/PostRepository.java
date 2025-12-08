@@ -7,6 +7,8 @@ import com.example.demo.domain.user.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +42,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     );
 
     // 임시 저장
+//    @Query("select p from posts " +
+//            "where p.status = 'ACTIVE' and " +
+//            "p.author.username = :username and" +
+//            "p.postState = 'DRAFT' " +
+//            "order by p.updatedAt desc")
+//    List<Post> findByMyDraftPost(@Param("username") String username);
     List<Post> findByStatusAndAuthor_UsernameAndStateOrderByUpdatedAtDesc(
             PostStatus status, String username, PostState state
     );
