@@ -1,54 +1,44 @@
 package com.example.demo.global.exception;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import javax.security.sasl.AuthenticationException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ResponseBody
+    private ResponseEntity<ErrorMessage> buildErrorResponse(ErrorCode errorCode, String message){
+        ErrorMessage error = ErrorMessage.builder()
+                .status(errorCode.getStatus())
+                .error(errorCode.getError())
+                .message(message)
+                .build();
+        return ResponseEntity.status(errorCode.getStatus()).body(error);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorMessage> handleIllegalArgument(IllegalArgumentException e) {
-        ErrorMessage error = ErrorMessage.builder()
-                .status(HttpStatus.BAD_REQUEST)
-                .message("BAD_REQUEST")
-                .errors(e.getMessage())
-                .build();
-        return ResponseEntity.badRequest().body(error);
+        return buildErrorResponse(ErrorCode.BAD_REQUEST, e.getMessage());
     }
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorMessage> handleAuthentication(AuthenticationException e) {
-        ErrorMessage error = ErrorMessage.builder()
-                .status(HttpStatus.UNAUTHORIZED)
-                .message("UNAUTHORIZED")
-                .errors(e.getMessage())
-                .build();
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        return buildErrorResponse(ErrorCode.UNAUTHORIZED, e.getMessage());
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorMessage> handleAccessDenied(org.springframework.security.access.AccessDeniedException e) {
-        ErrorMessage error = ErrorMessage.builder()
-                .status(HttpStatus.UNAUTHORIZED)
-                .message("UNAUTHORIZED")
-                .errors(e.getMessage())
-                .build();
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    public ResponseEntity<ErrorMessage> handleAccessDenied(AccessDeniedException e) {
+        return buildErrorResponse(ErrorCode.FORBIDDEN, e.getMessage());
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorMessage> handleResourceNotFound(ResourceNotFoundException e){
+        return buildErrorResponse(ErrorCode.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorMessage> handleOthers(Exception e) {
-        ErrorMessage error = ErrorMessage.builder()
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .message("INTERNAL_SERVER_ERROR")
-                .errors(e.getMessage())
-                .build();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        return buildErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 }
