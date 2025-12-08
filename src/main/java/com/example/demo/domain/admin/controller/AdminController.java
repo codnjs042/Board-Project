@@ -29,10 +29,6 @@ public class AdminController {
             @RequestParam(defaultValue="0") int page,
             @RequestParam(required=false) String keyword,
             Model model, Principal principal){
-        if(principal!=null) {
-            UserResponseDto user = userService.userInfo(principal.getName());
-            model.addAttribute("user", user);
-        }
         Page<UserAdminResponseDto> userPage
                 = (keyword!=null && !keyword.isBlank())
                 ? adminService.searchUsers(keyword, page)
@@ -60,10 +56,6 @@ public class AdminController {
             @RequestParam(required=false) String keyword,
             @RequestParam(required=false) String type,
             Model model, Principal principal){
-        if(principal!=null) {
-            UserResponseDto user = userService.userInfo(principal.getName());
-            model.addAttribute("user", user);
-        }
         Page<PostAdminResponseDto> postPage
                 = (keyword!=null && !keyword.isBlank())
                 ? adminService.searchPosts(keyword, type, page)

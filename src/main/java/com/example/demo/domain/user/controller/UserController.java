@@ -32,30 +32,18 @@ public class UserController {
     private final KakaoService kakaoService;
 
     @GetMapping
-    public String main(Model model, Principal principal){
-        if(principal!=null) {
-            UserResponseDto user = userService.userInfo(principal.getName());
-            model.addAttribute("user", user);
-        }
+    public String main(Model model){
         return "index";
     }
 
     @GetMapping("/user/signup")
-    public String signup(Model model, Principal principal){
-        if(principal!=null) {
-            UserResponseDto user = userService.userInfo(principal.getName());
-            model.addAttribute("user", user);
-        }
+    public String signup(Model model){
         return "user/signup";
     }
 
     @PostMapping("/user/signup")
     public String signup(@ModelAttribute UserSignupRequestDto dto, Model model, Principal principal){
         try {
-            if(principal!=null) {
-                UserResponseDto user = userService.userInfo(principal.getName());
-                model.addAttribute("user", user);
-            }
             userService.signup(dto);
             return "redirect:/user/login";
         } catch(IllegalArgumentException e){
@@ -66,10 +54,6 @@ public class UserController {
 
     @GetMapping("/user/login")
     public String login(@RequestParam(required=false) String error, Model model, Principal principal){
-        if(principal!=null) {
-            UserResponseDto user = userService.userInfo(principal.getName());
-            model.addAttribute("user", user);
-        }
         if(error!=null) model.addAttribute("error", "아이디 또는 비밀번호가 올바르지 않습니다");
         model.addAttribute("kakao", kakaoComponent);
         return "user/login";
@@ -77,10 +61,6 @@ public class UserController {
 
     @GetMapping("/user/myPage")
     public String myPage(Model model, Principal principal){
-        if(principal!=null) {
-            UserResponseDto user = userService.userInfo(principal.getName());
-            model.addAttribute("user", user);
-        }
         return "user/myPage";
     }
 
@@ -102,11 +82,6 @@ public class UserController {
             @RequestParam(required=false) String type,
             Principal principal,
             Model model){
-        if(principal!=null) {
-            UserResponseDto user = userService.userInfo(principal.getName());
-            model.addAttribute("user", user);
-        }
-
         Page<PostResponseDto> PostPage
                 = (keyword!=null && !keyword.isBlank())
                 ? userService.searchMyPost(principal.getName(), PostState.PUBLISHED, keyword, type, page)
@@ -142,8 +117,6 @@ public class UserController {
     @GetMapping("/user/delete")
     public String delete(Principal principal, Model model){
         if(principal!=null) {
-            UserResponseDto user = userService.userInfo(principal.getName());
-            model.addAttribute("user", user);
             UserStatusResponseDto userStatus = userService.userStatus(principal.getName());
             model.addAttribute("userStatus", userStatus);
             if (userStatus.pendingAt != null) {
@@ -175,10 +148,6 @@ public class UserController {
 
     @GetMapping("/user/draft")
     public String draft(Principal principal, Model model){
-        if(principal!=null) {
-            UserResponseDto user = userService.userInfo(principal.getName());
-            model.addAttribute("user", user);
-        }
         List<PostResponseDto> draft
                 = postService.findDraft(principal.getName(), PostState.DRAFT);
         model.addAttribute("draft", draft);

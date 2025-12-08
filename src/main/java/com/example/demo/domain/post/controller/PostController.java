@@ -27,10 +27,6 @@ public class PostController {
 
     @GetMapping("/write")
     public String write(@RequestParam(required = false) Long id, Model model, Principal principal){
-        if(principal!=null) {
-            UserResponseDto user = userService.userInfo(principal.getName());
-            model.addAttribute("user", user);
-        }
         if (id != null) {
             PostResponseDto post = postService.findById(id); // 여기서 id가 null이면 에러
             model.addAttribute("post", post);
@@ -54,10 +50,6 @@ public class PostController {
             @RequestParam(required=false) String keyword,
             @RequestParam(required=false) String type,
             Model model, Principal principal){
-        if(principal!=null) {
-            UserResponseDto user = userService.userInfo(principal.getName());
-            model.addAttribute("user", user);
-        }
         Page<PostResponseDto> postPage
                 = (keyword!=null && !keyword.isBlank())
                 ? postService.searchPost(PostState.PUBLISHED, keyword, type, page)
@@ -69,10 +61,6 @@ public class PostController {
 
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model, Principal principal){
-        if(principal!=null) {
-            UserResponseDto user = userService.userInfo(principal.getName());
-            model.addAttribute("user", user);
-        }
         PostResponseDto post = postService.findById(id);
         model.addAttribute("post", post);
         List<CommentResponseDto> comments = commentService.findAll(id);
@@ -92,11 +80,7 @@ public class PostController {
 
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model, Principal principal){
-        if(principal!=null) {
-            UserResponseDto user = userService.userInfo(principal.getName());
-            model.addAttribute("user", user);
-        }
-        else return "redirect:/user/login";
+        if(principal==null) return "redirect:/user/login";
         PostResponseDto post = postService.findById(id);
         model.addAttribute("post", post);
         return "post/edit";
