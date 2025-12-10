@@ -39,7 +39,7 @@
                                     <td><label for="confirmPw">새 비밀번호 확인</label></td>
                                     <td><input type="password" id="confirmPw" name="confirmPw" required></td>
                                 </tr>
-                                <tr><td colspan="2"><button type="submit" th:disabled="{user.role.name()=='KAKAO_USER'}">변경</button></td></tr>
+                                <tr><td colspan="2"><button type="submit" th:disabled="${user.role.name()=='KAKAO_USER'}">변경</button></td></tr>
                             </tbody>
                         </table>
                     </form>

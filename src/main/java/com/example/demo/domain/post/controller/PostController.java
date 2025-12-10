@@ -23,10 +23,9 @@ import java.util.List;
 public class PostController {
     public final PostService postService;
     public final CommentService commentService;
-    private final UserService userService;
 
     @GetMapping("/write")
-    public String write(@RequestParam(required = false) Long id, Model model, Principal principal){
+    public String write(@RequestParam(required = false) Long id, Model model){
         if (id != null) {
             PostResponseDto post = postService.findById(id); // 여기서 id가 null이면 에러
             model.addAttribute("post", post);
@@ -49,7 +48,7 @@ public class PostController {
             @RequestParam(defaultValue="0") int page,
             @RequestParam(required=false) String keyword,
             @RequestParam(required=false) String type,
-            Model model, Principal principal){
+            Model model){
         Page<PostResponseDto> postPage
                 = (keyword!=null && !keyword.isBlank())
                 ? postService.searchPost(PostState.PUBLISHED, keyword, type, page)
@@ -60,7 +59,7 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public String detail(@PathVariable Long id, Model model, Principal principal){
+    public String detail(@PathVariable Long id, Model model){
         PostResponseDto post = postService.findById(id);
         model.addAttribute("post", post);
         List<CommentResponseDto> comments = commentService.findAll(id);

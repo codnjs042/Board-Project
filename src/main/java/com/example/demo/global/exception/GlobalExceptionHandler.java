@@ -2,6 +2,7 @@ package com.example.demo.global.exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import javax.security.sasl.AuthenticationException;
@@ -17,7 +18,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(errorCode.getStatus()).body(error);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler(value = IllegalArgumentException.class, produces = "application/json")
     public ResponseEntity<ErrorMessage> handleIllegalArgument(IllegalArgumentException e) {
         return buildErrorResponse(ErrorCode.BAD_REQUEST, e.getMessage());
     }

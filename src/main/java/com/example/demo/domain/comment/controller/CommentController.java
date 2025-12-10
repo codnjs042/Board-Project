@@ -16,7 +16,6 @@ import java.security.Principal;
 @RequestMapping("/post/{postId}")
 public class CommentController {
     private final CommentService commentService;
-    private final UserService userService;
 
 //    @GetMapping("/comment")
 //    @ResponseBody

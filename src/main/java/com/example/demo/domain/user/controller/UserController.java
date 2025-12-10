@@ -1,5 +1,6 @@
 package com.example.demo.domain.user.controller;
 
+import com.example.demo.domain.user.domain.User;
 import com.example.demo.domain.user.dto.*;
 import com.example.demo.global.infra.kakao.component.KakaoComponent;
 import com.example.demo.global.infra.kakao.service.KakaoService;
@@ -42,37 +43,27 @@ public class UserController {
     }
 
     @PostMapping("/user/signup")
-    public String signup(@ModelAttribute UserSignupRequestDto dto, Model model, Principal principal){
-        try {
-            userService.signup(dto);
-            return "redirect:/user/login";
-        } catch(IllegalArgumentException e){
-            model.addAttribute("error", e.getMessage());
-            return "user/signup";
-        }
+    public String signup(@ModelAttribute UserSignupRequestDto dto){
+        userService.signup(dto);
+        return "redirect:/user/login";
     }
 
     @GetMapping("/user/login")
-    public String login(@RequestParam(required=false) String error, Model model, Principal principal){
+    public String login(@RequestParam(required=false) String error, Model model){
         if(error!=null) model.addAttribute("error", "아이디 또는 비밀번호가 올바르지 않습니다");
         model.addAttribute("kakao", kakaoComponent);
         return "user/login";
     }
 
     @GetMapping("/user/myPage")
-    public String myPage(Model model, Principal principal){
+    public String myPage(){
         return "user/myPage";
     }
 
     @PostMapping("/user/myPage")
-    public String myPage(@RequestParam String nickname, Principal principal, Model model){
-        try{
-            userService.updateNickname(principal.getName(), nickname);
-            return "redirect:/user/myPage";
-        }catch(IllegalArgumentException e){
-            model.addAttribute("error", e.getMessage());
-            return "user/myPage";
-        }
+    public String myPage(@RequestParam String nickname, Principal principal){
+        userService.updateNickname(principal.getName(), nickname);
+        return "redirect:/user/myPage";
     }
 
     @GetMapping("/user/myHistory")
@@ -92,26 +83,16 @@ public class UserController {
     }
 
     @GetMapping("/user/pwPage")
-    public String pwPage(Model model, Principal principal){
-        if(principal!=null) {
-            UserResponseDto user = userService.userInfo(principal.getName());
-            model.addAttribute("user", user);
-            if (user.getRole() == UserRole.KAKAO_USER) {
-                return "redirect:/";
-            }
-        }
-        return "user/pwPage";
+    public String pwPage(Model model){
+        UserResponseDto user = (UserResponseDto) model.getAttribute("user");
+        if(user!=null && user.getRole()==UserRole.KAKAO_USER) return "redirect:/";
+        else return "user/pwPage";
     }
 
     @PostMapping("/user/pwPage")
-    public String pwPage(@ModelAttribute UserPasswordRequestDto dto, Principal principal, Model model){
-        try{
-            userService.updatePassword(dto, principal.getName());
-            return "redirect:/user/myPage";
-        }catch(IllegalArgumentException e){
-            model.addAttribute("error", e.getMessage());
-            return "user/pwPage";
-        }
+    public String pwPage(@ModelAttribute UserPasswordRequestDto dto, Principal principal){
+        userService.updatePassword(dto, principal.getName());
+        return "redirect:/user/myPage";
     }
 
     @GetMapping("/user/delete")
@@ -128,10 +109,14 @@ public class UserController {
     }
 
     @PostMapping("/user/delete")
-    public String delete(@ModelAttribute UserStatusRequestDto dto, Principal principal, HttpServletRequest request, HttpServletResponse response,
+    public String delete(@ModelAttribute UserStatusRequestDto dto,
+                         Principal principal,
+                         Model model,
+                         HttpServletRequest request,
+                         HttpServletResponse response,
                          Authentication authentication){
-        UserResponseDto user = userService.userInfo(principal.getName());
-        if (user.getRole() == UserRole.KAKAO_USER) {
+        UserResponseDto user = (UserResponseDto) model.getAttribute("user");
+        if(user!=null && user.getRole()==UserRole.KAKAO_USER){
             HttpSession session = request.getSession(false);
             if (session != null) {
                 String token = (String) session.getAttribute("KAKAO_ACCESS_TOKEN");
@@ -148,8 +133,7 @@ public class UserController {
 
     @GetMapping("/user/draft")
     public String draft(Principal principal, Model model){
-        List<PostResponseDto> draft
-                = postService.findDraft(principal.getName(), PostState.DRAFT);
+        List<PostResponseDto> draft = postService.findDraft(principal.getName(), PostState.DRAFT);
         model.addAttribute("draft", draft);
         return "user/draft";
     }

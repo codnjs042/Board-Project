@@ -22,13 +22,12 @@ import java.security.Principal;
 @RequestMapping("/admin")
 public class AdminController {
     public final AdminService adminService;
-    public final UserService userService;
 
     @GetMapping
     public String userList(
             @RequestParam(defaultValue="0") int page,
             @RequestParam(required=false) String keyword,
-            Model model, Principal principal){
+            Model model){
         Page<UserAdminResponseDto> userPage
                 = (keyword!=null && !keyword.isBlank())
                 ? adminService.searchUsers(keyword, page)
@@ -39,15 +38,9 @@ public class AdminController {
     }
 
     @PostMapping("user/delete")
-    public String userDelete(@ModelAttribute UserAdminRequestDto dto, Principal principal, Model model){
-        try {
-            adminService.deleteUsers(dto, principal.getName());
-            return "redirect:/admin";
-        }
-        catch(IllegalArgumentException e){
-            model.addAttribute("error", e.getMessage());
-            return "redirect:/admin";
-        }
+    public String userDelete(@ModelAttribute UserAdminRequestDto dto, Principal principal){
+        adminService.deleteUsers(dto, principal.getName());
+        return "redirect:/admin";
     }
 
     @GetMapping("post")
@@ -55,7 +48,7 @@ public class AdminController {
             @RequestParam(defaultValue="0") int page,
             @RequestParam(required=false) String keyword,
             @RequestParam(required=false) String type,
-            Model model, Principal principal){
+            Model model){
         Page<PostAdminResponseDto> postPage
                 = (keyword!=null && !keyword.isBlank())
                 ? adminService.searchPosts(keyword, type, page)
@@ -66,14 +59,8 @@ public class AdminController {
     }
 
     @PostMapping("post/delete")
-    public String postDelete(@ModelAttribute PostAdminRequestDto dto, Principal principal, Model model){
-        try {
-            adminService.deletePosts(dto, principal.getName());
-            return "redirect:/admin/post";
-        }
-        catch(IllegalArgumentException e){
-            model.addAttribute("error", e.getMessage());
-            return "redirect:/admin/post";
-        }
+    public String postDelete(@ModelAttribute PostAdminRequestDto dto, Principal principal){
+        adminService.deletePosts(dto, principal.getName());
+        return "redirect:/admin/post";
     }
 }
