@@ -1,10 +1,13 @@
 package com.example.demo.global.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import javax.security.sasl.AuthenticationException;
 
 @ControllerAdvice
@@ -21,6 +24,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = IllegalArgumentException.class, produces = "application/json")
     public ResponseEntity<ErrorMessage> handleIllegalArgument(IllegalArgumentException e) {
         return buildErrorResponse(ErrorCode.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(value = IllegalArgumentException.class, produces = "text/html")
+    public String handleIllegalArgumentView(IllegalArgumentException e, HttpServletRequest request, RedirectAttributes redirectAttrs) {
+        String uri = request.getRequestURI();
+        redirectAttrs.addFlashAttribute("error", e.getMessage());
+        return "redirect:"+uri;
     }
 
     @ExceptionHandler(AuthenticationException.class)
