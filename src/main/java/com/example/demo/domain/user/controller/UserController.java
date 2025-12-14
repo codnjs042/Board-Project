@@ -1,6 +1,5 @@
 package com.example.demo.domain.user.controller;
 
-import com.example.demo.domain.user.domain.User;
 import com.example.demo.domain.user.dto.*;
 import com.example.demo.global.infra.kakao.component.KakaoComponent;
 import com.example.demo.global.infra.kakao.service.KakaoService;
@@ -19,7 +18,6 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,12 +31,12 @@ public class UserController {
     private final KakaoService kakaoService;
 
     @GetMapping
-    public String main(Model model){
+    public String main(){
         return "index";
     }
 
     @GetMapping("/user/signup")
-    public String signup(Model model){
+    public String signup(){
         return "user/signup";
     }
 
@@ -83,10 +81,8 @@ public class UserController {
     }
 
     @GetMapping("/user/pwPage")
-    public String pwPage(Model model){
-        UserResponseDto user = (UserResponseDto) model.getAttribute("user");
-        if(user!=null && user.getRole()==UserRole.KAKAO_USER) return "redirect:/";
-        else return "user/pwPage";
+    public String pwPage(){
+        return "user/pwPage";
     }
 
     @PostMapping("/user/pwPage")
@@ -137,6 +133,7 @@ public class UserController {
         model.addAttribute("draft", draft);
         return "user/draft";
     }
+
 //    @PostMapping("/user/login")
 //    public String login(@ModelAttribute UserLoginRequestDto dto, HttpSession session, Model model){
 //        try {
