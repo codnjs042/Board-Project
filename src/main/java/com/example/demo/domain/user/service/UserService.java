@@ -8,15 +8,14 @@ import com.example.demo.domain.user.domain.User;
 import com.example.demo.domain.user.domain.UserStatus;
 import com.example.demo.domain.user.dto.*;
 import com.example.demo.domain.user.repository.UserRepository;
+import com.example.demo.global.exception.ForceLogoutException;
+import com.example.demo.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -61,29 +60,26 @@ public class UserService {
     }
 
     @Transactional
-    public void updateNickname(String username, String nickname){
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다"));
-        if(!user.getUsername().equals(username)){
-            throw new IllegalArgumentException("본인 닉네임만 수정할 수 있습니다");
-        }
+    public void updateNickname(String nickname, CustomUserDetails userDetails){
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new IllegalStateException("인증된 사용자 정보를 찾을 수 없습니다."));
+
         if(user.getRole()==UserRole.KAKAO_USER){
-            throw new IllegalArgumentException("카카오 유저는 닉네임만 수정할 수 없습니다");
+            throw new IllegalArgumentException("소셜 로그인 사용자는 닉네임을 변경할 수 없습니다.");
         }
 
         user.updateNickname(nickname);
     }
 
     @Transactional
-    public void updatePassword(UserPasswordRequestDto pwDto, String username){
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다"));
-        if(!user.getUsername().equals(username)){
-            throw new IllegalArgumentException("본인 비밀번호만 수정할 수 있습니다");
-        }
+    public void updatePassword(UserPasswordRequestDto pwDto, CustomUserDetails userDetails){
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new IllegalStateException("인증된 사용자 정보를 찾을 수 없습니다."));
+
         if(user.getRole()==UserRole.KAKAO_USER){
-            throw new IllegalArgumentException("카카오 유저는 닉네임만 수정할 수 없습니다");
+            throw new IllegalArgumentException("소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다.");
         }
+
         if(!passwordEncoder.matches(pwDto.getCurrentPw(), user.getPassword())){
             throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
         }
@@ -93,8 +89,10 @@ public class UserService {
         if(!pwDto.getNewPw().equals(pwDto.getConfirmPw())){
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
+
         String encodePw = passwordEncoder.encode(pwDto.getNewPw());
         user.updatePassword(encodePw);
+        throw new ForceLogoutException("비밀번호가 변경되어 로그아웃됩니다. 다시 로그인 해주세요.");
     }
 
     @Transactional(readOnly = true)

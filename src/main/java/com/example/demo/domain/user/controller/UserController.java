@@ -8,12 +8,14 @@ import com.example.demo.domain.post.dto.PostResponseDto;
 import com.example.demo.domain.post.service.PostService;
 import com.example.demo.domain.user.domain.UserRole;
 import com.example.demo.domain.user.service.UserService;
+import com.example.demo.global.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -47,20 +49,20 @@ public class UserController {
     }
 
     @GetMapping("/user/login")
-    public String login(@RequestParam(required=false) String error, Model model){
-        if(error!=null) model.addAttribute("error", "아이디 또는 비밀번호가 올바르지 않습니다");
+    public String login(Model model){
         model.addAttribute("kakao", kakaoComponent);
         return "user/login";
     }
 
-    @GetMapping("/user/myPage")
+    @GetMapping({"/user", "/user/myPage"})
     public String myPage(){
         return "user/myPage";
     }
 
     @PostMapping("/user/myPage")
-    public String myPage(@RequestParam String nickname, Principal principal){
-        userService.updateNickname(principal.getName(), nickname);
+    public String updateNickname(@RequestParam String nickname,
+                                 @AuthenticationPrincipal CustomUserDetails userDetails){
+        userService.updateNickname(nickname, userDetails);
         return "redirect:/user/myPage";
     }
 
@@ -86,9 +88,10 @@ public class UserController {
     }
 
     @PostMapping("/user/pwPage")
-    public String pwPage(@ModelAttribute UserPasswordRequestDto dto, Principal principal){
-        userService.updatePassword(dto, principal.getName());
-        return "redirect:/user/myPage";
+    public String pwPage(@ModelAttribute UserPasswordRequestDto dto,
+                         @AuthenticationPrincipal CustomUserDetails userDetails){
+        userService.updatePassword(dto, userDetails);
+        return "redirect:/user/login";
     }
 
     @GetMapping("/user/delete")
@@ -147,7 +150,7 @@ public class UserController {
 //            return "redirect:/user/login";
 //        }
 //    }
-
+//
 //    @GetMapping("/user/logout")
 //    public String logout(HttpSession session){
 //        session.invalidate();

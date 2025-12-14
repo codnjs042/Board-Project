@@ -4,6 +4,7 @@ import com.example.demo.domain.user.domain.User;
 import com.example.demo.domain.user.domain.UserRole;
 import com.example.demo.domain.user.domain.UserStatus;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -13,11 +14,12 @@ import java.util.Collection;
 import java.util.List;
 
 @Getter
+@Setter
 public class CustomUserDetails implements UserDetails{
     private final Long id;
     private final String username;
-    private final String password;
-    private final UserRole role;
+    private String password;
+    private UserRole role;
     private UserStatus status;
 
     public CustomUserDetails(User user){
@@ -34,16 +36,16 @@ public class CustomUserDetails implements UserDetails{
         return List.of(new SimpleGrantedAuthority(roleName));
     }
 
-    @Override public boolean isAccountNonExpired() {
-        return true;
-    }
-    @Override public boolean isAccountNonLocked() {
-        return true;
-    }
-    @Override public boolean isCredentialsNonExpired() {
-        return true;
-    }
     @Override public boolean isEnabled() {
         return this.status != UserStatus.DISABLED;
     }
+//    @Override public boolean isAccountNonExpired() {
+//        return true;
+//    }
+//    @Override public boolean isAccountNonLocked() {
+//        return true;
+//    }
+//    @Override public boolean isCredentialsNonExpired() {
+//        return true;
+//    }
 }

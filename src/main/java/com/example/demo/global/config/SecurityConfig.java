@@ -2,6 +2,7 @@ package com.example.demo.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
@@ -17,9 +18,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/css/**", "/js/**", "/img/**",
                                 "/user/login", "/user/signup", "/post").permitAll()
-                        .requestMatchers("/user/myPage", "/user/myHistory", "/user/delete", "/user/draft",
-                                "/post/write", "/post/*/edit").authenticated()
-                        .requestMatchers("/user/pwPage").hasAnyRole("USER", "ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/user", "/user/myPage", "/user/myHistory", "/user/delete",
+                                "/user/draft", "/post/write", "/post/*/edit", "/post/*/comment/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/post/*").authenticated()
+                        .requestMatchers("/user/myPage","/user/pwPage").hasAnyRole("USER", "ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )
@@ -39,7 +41,13 @@ public class SecurityConfig {
                 )
 
                 .exceptionHandling(e -> e
-                        .accessDeniedPage("/"))
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendRedirect("/user/login");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.sendRedirect("/");
+                        })
+                )
 
                 .logout(logout -> logout
                         .logoutUrl("/logout")
