@@ -12,17 +12,18 @@ import javax.security.sasl.AuthenticationException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(ForceLogoutException.class)
-    public String handleForceLogout(HttpServletRequest request){
+    public String handleForceLogout(HttpServletRequest request, RedirectAttributes redirectAttrs, Exception e){
         SecurityContextHolder.clearContext();
         request.getSession().invalidate();
+        redirectAttrs.addFlashAttribute("error", e.getMessage());
         return "redirect:/user/login";
     }
 
     @ExceptionHandler(value = Exception.class, produces = "text/html")
-    public String handleException(Exception e, HttpServletRequest request, RedirectAttributes redirectAttrs) {
+    public String handleException(HttpServletRequest request, RedirectAttributes redirectAttrs, Exception e) {
         String uri = request.getRequestURI();
         redirectAttrs.addFlashAttribute("error", e.getMessage());
-        return "redirect:"+uri;
+        return "redirect:" + uri;
 }
 
 //    private ResponseEntity<ErrorMessage> buildErrorResponse(ErrorCode errorCode, String message){

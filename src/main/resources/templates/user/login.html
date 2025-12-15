@@ -41,6 +41,9 @@
         <div th:if="${param.error}">
             <p>아이디 또는 비밀번호가 올바르지 않습니다</p>
         </div>
+        <div th:if="${error}">
+            <p th:text="${error}"></p>
+        </div>
     </main>
 </body>
 </html>

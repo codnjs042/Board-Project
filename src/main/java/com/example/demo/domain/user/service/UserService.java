@@ -71,7 +71,7 @@ public class UserService {
         user.updateNickname(nickname);
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = ForceLogoutException.class)
     public void updatePassword(UserPasswordRequestDto pwDto, CustomUserDetails userDetails){
         User user = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new IllegalStateException("인증된 사용자 정보를 찾을 수 없습니다."));
@@ -83,11 +83,11 @@ public class UserService {
         if(!passwordEncoder.matches(pwDto.getCurrentPw(), user.getPassword())){
             throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
         }
-        if(!pwDto.getNewPw().equals(pwDto.getCurrentPw())){
-            throw new IllegalArgumentException("현재 비밀번호와 같은 비밀번호로 수정할 수 없습니다");
+        if(pwDto.getNewPw().equals(pwDto.getCurrentPw())){
+            throw new IllegalArgumentException("현재 비밀번호와 같은 비밀번호로 변경할 수 없습니다.");
         }
         if(!pwDto.getNewPw().equals(pwDto.getConfirmPw())){
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new IllegalArgumentException("변경 비밀번호가 일치하지 않습니다.");
         }
 
         String encodePw = passwordEncoder.encode(pwDto.getNewPw());
