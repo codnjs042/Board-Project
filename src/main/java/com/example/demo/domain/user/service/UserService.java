@@ -56,6 +56,7 @@ public class UserService {
     public UserResponseDto userInfo(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
         return UserResponseDto.from(user);
     }
 
@@ -92,7 +93,7 @@ public class UserService {
 
         String encodePw = passwordEncoder.encode(pwDto.getNewPw());
         user.updatePassword(encodePw);
-        throw new ForceLogoutException("비밀번호가 변경되어 로그아웃됩니다. 다시 로그인 해주세요.");
+        throw new ForceLogoutException("비밀번호가 변경되어 로그아웃되었습니다. 다시 로그인 해주세요.");
     }
 
     @Transactional(readOnly = true)
@@ -106,28 +107,27 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteToggle(UserStatusRequestDto dto, String username){
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다"));
+    public void deleteToggle(CustomUserDetails userDetails){
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new IllegalStateException("인증된 사용자 정보를 찾을 수 없습니다."));
+
         if(user.getRole()==UserRole.SUPER_ADMIN)
-            throw new IllegalArgumentException("슈퍼 관리자는 계정을 삭제할 수 없습니다");
-        user.updateStatus(dto.getStatus());
+            throw new IllegalArgumentException("슈퍼 관리자는 본인 계정을 삭제할 수 없습니다");
+
+        if(user.getStatus()==UserStatus.ACTIVE)
+            user.updateStatus(UserStatus.PENDING);
+
+        else if(user.getStatus()==UserStatus.PENDING)
+            user.updateStatus(UserStatus.ACTIVE);
+
+        else throw new ForceLogoutException("계정이 비활성화되어 삭제/복구 요청을 처리할 수 없습니다. 관리자에게 문의하세요.");
     }
 
     @Transactional
-    public UserStatusResponseDto userStatus(String username){
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다"));
+    public UserStatusResponseDto userStatus(CustomUserDetails userDetails){
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new IllegalStateException("인증된 사용자 정보를 찾을 수 없습니다."));
+
         return new UserStatusResponseDto(user);
     }
-
-//    public UserResponseDto login(UserLoginRequestDto dto){
-//        User user = userRepository.findByUsername(dto.getUsername())
-//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다"));
-//        if(!user.getPassword().equals(dto.getPassword())){
-//        if(passwordEncoder.matches(dto.getPassword(), user.getPassword())){
-//            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
-//        }
-//        return UserResponseDto.from(user);
-//    }
 }

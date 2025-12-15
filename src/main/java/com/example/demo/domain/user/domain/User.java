@@ -40,14 +40,15 @@ public class User {
     private LocalDateTime pendingAt;
 
     public void updatePassword(String password){
-        this.password=password;
+        this.password = password;
     }
+
     public void updateNickname(String nickname){
-        this.nickname=nickname;
+        this.nickname = nickname;
     }
-    public void updateStatus(UserStatus status){
-        this.status=status;
-        if(status==UserStatus.PENDING)
-            this.pendingAt=LocalDateTime.now();
+
+    public void updateStatus(UserStatus status) {
+        this.status = status;
+        if (status == UserStatus.PENDING) this.pendingAt = LocalDateTime.now();
     }
 }

@@ -3,6 +3,7 @@ package com.example.demo.global.config;
 import com.example.demo.domain.user.domain.User;
 import com.example.demo.domain.user.domain.UserStatus;
 import com.example.demo.domain.user.repository.UserRepository;
+import com.example.demo.global.exception.ForceLogoutException;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -26,6 +27,7 @@ public class SchedulerConfig {
         for(User user : users){
             if(user.getPendingAt().toLocalDate().plusDays(30).atTime(23, 59, 59).isBefore(now)){
                 user.updateStatus(UserStatus.DISABLED);
+                throw new ForceLogoutException("계정이 비활성화되어 로그아웃되었습니다.");
             }
         }
     }

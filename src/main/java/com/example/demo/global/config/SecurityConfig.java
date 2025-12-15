@@ -22,6 +22,7 @@ public class SecurityConfig {
                                 "/user/draft", "/post/write", "/post/*/edit", "/post/*/comment/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/post/*").authenticated()
                         .requestMatchers("/user/myPage","/user/pwPage").hasAnyRole("USER", "ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/user/delete").hasAnyRole("USER", "KAKAO_USER", "ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )

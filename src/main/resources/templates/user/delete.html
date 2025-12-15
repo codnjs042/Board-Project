@@ -17,21 +17,30 @@
             <ul>
                 <li><a th:href="@{/user/myPage}">회원 정보 변경</a></li>
                 <li><a th:href="@{/user/myHistory}">유저 활동 내역</a></li>
-                <li><a th:href="@{/user/delete}">계정 삭제</a></li>
+                <li><a th:href="@{/user/delete}">서비스 탈퇴</a></li>
             </ul>
         </nav>
         <section>
-            <form th:action="@{/user/delete}" method="post">
-                <div th:if="${userStatus.status.name()=='ACTIVE'}">
-                    <button type="submit" name="status" value="PENDING" onclick="return confirm('정말 삭제하시겠습니까?');">계정 삭제</button>
-                </div>
-                <div th:if="${userStatus.status.name()=='PENDING'}">
-                    <p>계정 삭제 시 30일 이내에 복구 가능합니다.<br>
-                        <span th:text="|복구 가능 기간 : ${#temporals.format(deadLine, 'yyyy-MM-dd HH:mm')}|"></span>
-                    </p>
-                    <button type="submit" name="status" value="ACTIVE" onclick="return confirm('다시 복구하시겠습니까?');">계정 복구</button>
-                </div>
-            </form>
+            <div th:if="${user.role.name()!='KAKAO_USER'}">
+                <form th:action="@{/user/delete}" method="post">
+                    <div th:if="${userStatus.status.name()=='ACTIVE'}">
+                        <button type="submit" onclick="return confirm('정말 삭제하시겠습니까?');" th:disabled="${user.role.name=='SUPER_ADMIN'}">계정 삭제</button>
+                    </div>
+                    <div th:if="${userStatus.status.name()=='PENDING'}">
+                        <p>계정 삭제 시 30일 이내에 복구 가능합니다.<br>
+                            <span th:text="|복구 가능 기간 : ${#temporals.format(userStatus.deadLine, 'yyyy-MM-dd HH:mm')}|"></span>
+                        </p>
+                        <button type="submit" onclick="return confirm('다시 복구하시겠습니까?');">계정 복구</button>
+                    </div>
+                </form>
+            </div>
+            <div th:unless="${user.role.name()!='KAKAO_USER'}">
+                <form th:action="@{/kakao/delete}" method="post">
+                    <div th:if="${userStatus.status.name()=='ACTIVE'}">
+                        <button type="submit" value="PENDING" onclick="return confirm('정말 삭제하시겠습니까?');" th:disabled="${user.role.name=='SUPER_ADMIN'}">계정 삭제</button>
+                    </div>
+                </form>
+            </div>
         </section>
     </div>
 </main>

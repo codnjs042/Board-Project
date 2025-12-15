@@ -8,6 +8,7 @@ import com.example.demo.domain.post.dto.PostResponseDto;
 import com.example.demo.domain.post.repository.PostRepository;
 import com.example.demo.domain.user.domain.User;
 import com.example.demo.domain.user.repository.UserRepository;
+import com.example.demo.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -62,8 +63,8 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponseDto> findDraft(String username, PostState state){
-        return postRepository.findByStatusAndAuthor_UsernameAndStateOrderByUpdatedAtDesc(PostStatus.ACTIVE, username, state)
+    public List<PostResponseDto> findDraft(CustomUserDetails userDetails, PostState state){
+        return postRepository.findByStatusAndAuthor_UsernameAndStateOrderByUpdatedAtDesc(PostStatus.ACTIVE, userDetails.getUsername(), state)
                 .stream()
                 .map(PostResponseDto::new)
                 .collect(Collectors.toList());

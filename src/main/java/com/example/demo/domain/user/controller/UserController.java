@@ -95,44 +95,23 @@ public class UserController {
     }
 
     @GetMapping("/user/delete")
-    public String delete(Principal principal, Model model){
-        if(principal!=null) {
-            UserStatusResponseDto userStatus = userService.userStatus(principal.getName());
-            model.addAttribute("userStatus", userStatus);
-            if (userStatus.pendingAt != null) {
-                LocalDateTime deadLine = userStatus.getPendingAt().plusDays(30);
-                model.addAttribute("deadLine", deadLine);
-            }
-        }
+    public String delete(@AuthenticationPrincipal CustomUserDetails userDetails,
+                         Model model){
+        UserStatusResponseDto userStatus = userService.userStatus(userDetails);
+        model.addAttribute("userStatus", userStatus);
         return "user/delete";
     }
 
     @PostMapping("/user/delete")
-    public String delete(@ModelAttribute UserStatusRequestDto dto,
-                         Principal principal,
-                         Model model,
-                         HttpServletRequest request,
-                         HttpServletResponse response,
-                         Authentication authentication){
-        UserResponseDto user = (UserResponseDto) model.getAttribute("user");
-        if(user!=null && user.getRole()==UserRole.KAKAO_USER){
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                String token = (String) session.getAttribute("KAKAO_ACCESS_TOKEN");
-                if (token != null) {
-                    kakaoService.disconnect(user.getUsername(), token);
-                    new SecurityContextLogoutHandler().logout(request, response, authentication);
-                    return "redirect:/";
-                }
-            }
-        }
-        userService.deleteToggle(dto, principal.getName());
+    public String delete(@AuthenticationPrincipal CustomUserDetails userDetails){
+        userService.deleteToggle(userDetails);
         return "redirect:/user/delete";
     }
 
     @GetMapping("/user/draft")
-    public String draft(Principal principal, Model model){
-        List<PostResponseDto> draft = postService.findDraft(principal.getName(), PostState.DRAFT);
+    public String draft(@AuthenticationPrincipal CustomUserDetails userDetails,
+                        Model model){
+        List<PostResponseDto> draft = postService.findDraft(userDetails, PostState.DRAFT);
         model.addAttribute("draft", draft);
         return "user/draft";
     }

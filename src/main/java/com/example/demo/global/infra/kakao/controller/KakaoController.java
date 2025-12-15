@@ -1,13 +1,21 @@
 package com.example.demo.global.infra.kakao.controller;
+import com.example.demo.domain.user.dto.UserResponseDto;
 import com.example.demo.global.infra.kakao.service.KakaoService;
 import com.example.demo.domain.user.domain.User;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.security.Principal;
 import java.util.Map;
 
 
@@ -25,5 +33,22 @@ public class KakaoController {
         HttpSession session = request.getSession(true);
         session.setAttribute("KAKAO_ACCESS_TOKEN", token);
         return "redirect:/";
+    }
+
+    @PostMapping("/kakao/delete")
+    public String kakaoDelete(Model model,
+                         HttpServletRequest request,
+                         HttpServletResponse response,
+                         Authentication authentication){
+        UserResponseDto user = (UserResponseDto) model.getAttribute("user");
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            String token = (String) session.getAttribute("KAKAO_ACCESS_TOKEN");
+            if (token != null) {
+                kakaoService.disconnect(user.getUsername(), token);
+                new SecurityContextLogoutHandler().logout(request, response, authentication);
+                return "redirect:/";
+            }
+        }return "redirect:/";
     }
 }

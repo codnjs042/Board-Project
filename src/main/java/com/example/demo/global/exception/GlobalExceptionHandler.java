@@ -1,7 +1,11 @@
 package com.example.demo.global.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -12,9 +16,12 @@ import javax.security.sasl.AuthenticationException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(ForceLogoutException.class)
-    public String handleForceLogout(HttpServletRequest request, RedirectAttributes redirectAttrs, Exception e){
-        SecurityContextHolder.clearContext();
-        request.getSession().invalidate();
+    public String handleForceLogout(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    Authentication authentication,
+                                    RedirectAttributes redirectAttrs,
+                                    Exception e){
+        new SecurityContextLogoutHandler().logout(request, response, authentication);
         redirectAttrs.addFlashAttribute("error", e.getMessage());
         return "redirect:/user/login";
     }
