@@ -1,4 +1,11 @@
 $(function(){
+//    $("postInputSection input[type='file']").on("change", function(){
+//        const files = this.files;
+//        for(let i=0; i<files.length;i++){
+//            const url = URL.createObjectURL(files[i])
+//        }
+//    })
+
     $("button:contains('좋아요')").on("click", function(){
         if($(this).prop("data-like")){
             $(this).css({

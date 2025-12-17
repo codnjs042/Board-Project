@@ -7,7 +7,7 @@
 </head>
 <body>
     <header th:replace="~{layout/header :: header}"></header>
-    <main>
+    <main id="postInputSection">
         <h3>글 작성</h3>
         <a th:href="@{/}">Main</a>
         <a th:href="@{/user/draft}"><button>임시 저장 - 불러오기</button></a>
@@ -18,10 +18,16 @@
                 <label>공지<input type="radio" name="type" value="NOTICE" th:checked="${post!= null ? post.type.name() == 'NOTICE' : true}"></label>
             </div>
             <input th:unless="${user.role.name()=='ADMIN'}" type="hidden" name="type" value="NORMAL">
-                <label>제목:
+            <label>제목:
                 <input type="text" name="title" maxlength="30" th:value="${post != null ? post.title : ''}" required>
             </label>
             <br><br>
+            <div>
+<!--                <form th:action="@{/media}" method="post">-->
+<!--                    <input type="file" accept="image/*" multiple>-->
+<!--                    <input type="file" accept="video/*" multiple>-->
+<!--                </form>-->
+            </div>
             <label>내용:<br>
                 <textarea name="content" rows="10" cols="50" th:text="${post != null ? post.content : ''}" required></textarea>
             </label>

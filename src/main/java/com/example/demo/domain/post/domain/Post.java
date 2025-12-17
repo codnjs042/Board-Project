@@ -15,7 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class Post {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,7 +36,7 @@ public class Post {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = true)
+    @Column()
     private LocalDateTime updatedAt;
 
     @Column(nullable = false)
