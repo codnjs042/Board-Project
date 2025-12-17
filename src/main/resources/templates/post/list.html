@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html
-        xmlns:th="http://www.thymeleaf.org"
-        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>게시판 목록</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-    <div th:replace="layout/header :: header"></div>
+    <header th:replace="~{layout/header :: header}"></header>
     <main>
     <h3>게시글 목록</h3>
     <div sec:authorize="isAuthenticated()">

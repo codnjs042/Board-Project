@@ -2,63 +2,59 @@ package com.example.demo.global.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import javax.security.sasl.AuthenticationException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.net.URI;
+
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
+    public String handleIllegalArgument(HttpServletRequest request,
+                                        RedirectAttributes redirectAttrs,
+                                        Exception e){
+        String referer = request.getHeader("Referer");
+        String preUri = URI.create(referer).getPath();
+        redirectAttrs.addFlashAttribute("error", e.getMessage());
+        String errorType = e instanceof IllegalArgumentException?"Illegal Argument":"Illegal State";
+        log.warn("{}: [{}] {} 요청 by {}", errorType, request.getMethod(), request.getRequestURI(), request.getUserPrincipal(), e);
+        return "redirect:" + preUri;
+    }
+
     @ExceptionHandler(ForceLogoutException.class)
     public String handleForceLogout(HttpServletRequest request,
                                     HttpServletResponse response,
                                     Authentication authentication,
                                     RedirectAttributes redirectAttrs,
-                                    Exception e){
+                                    ForceLogoutException e){
         new SecurityContextLogoutHandler().logout(request, response, authentication);
         redirectAttrs.addFlashAttribute("error", e.getMessage());
+        log.warn("Force Logout: [{}] {} 요청 by {}", request.getMethod(), request.getRequestURI(), request.getUserPrincipal(), e);
         return "redirect:/user/login";
     }
 
-    @ExceptionHandler(value = Exception.class, produces = "text/html")
-    public String handleException(HttpServletRequest request, RedirectAttributes redirectAttrs, Exception e) {
-        String uri = request.getRequestURI();
+    @ExceptionHandler({NoHandlerFoundException.class, NoResourceFoundException.class})
+    public String handleNotFound(HttpServletRequest request,
+                                 RedirectAttributes redirectAttrs,
+                                 Exception e){
         redirectAttrs.addFlashAttribute("error", e.getMessage());
-        return "redirect:" + uri;
-}
+        log.error("404 Not Found: [{}] {} 요청 by {}", request.getMethod(), request.getRequestURI(), request.getUserPrincipal(), e);
+        return "error/404";
+    }
 
-//    private ResponseEntity<ErrorMessage> buildErrorResponse(ErrorCode errorCode, String message){
-//        ErrorMessage error = ErrorMessage.builder()
-//                .status(errorCode.getStatus())
-//                .error(errorCode.getError())
-//                .message(message)
-//                .build();
-//        return ResponseEntity.status(errorCode.getStatus()).body(error);
-//    }
-//    @ExceptionHandler(value = IllegalArgumentException.class, produces = "application/json")
-//    public ResponseEntity<ErrorMessage> handleIllegalArgument(IllegalArgumentException e) {
-//        return buildErrorResponse(ErrorCode.BAD_REQUEST, e.getMessage());
-//    }
-//    @ExceptionHandler(AuthenticationException.class)
-//    public ResponseEntity<ErrorMessage> handleAuthentication(AuthenticationException e) {
-//        return buildErrorResponse(ErrorCode.UNAUTHORIZED, e.getMessage());
-//    }
-//    @ExceptionHandler(AccessDeniedException.class)
-//    public ResponseEntity<ErrorMessage> handleAccessDenied(AccessDeniedException e) {
-//        return buildErrorResponse(ErrorCode.FORBIDDEN, e.getMessage());
-//    }
-//    @ExceptionHandler(ResourceNotFoundException.class)
-//    public ResponseEntity<ErrorMessage> handleResourceNotFound(ResourceNotFoundException e){
-//        return buildErrorResponse(ErrorCode.NOT_FOUND, e.getMessage());
-//    }
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<ErrorMessage> handleOthers(Exception e) {
-//        return buildErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
-//    }
+    @ExceptionHandler(Exception.class)
+    public String handleException(HttpServletRequest request,
+                                  RedirectAttributes redirectAttrs,
+                                  Exception e) {
+        redirectAttrs.addFlashAttribute("error", e.getMessage());
+        log.error("500 Internal Server Error: [{}] {} 요청 by {}", request.getMethod(), request.getRequestURI(), request.getUserPrincipal(), e);
+        return "error/500";
+    }
 }

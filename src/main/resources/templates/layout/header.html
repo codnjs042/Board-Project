@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<!--<html lang="en">-->
-<html xmlns:th="http://www.thymeleaf.org"
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
@@ -26,13 +26,4 @@
             </div>
         </nav>
     </div>
-    <!--    <div th:if="${session.loginUser!=null}">-->
-    <!--        <p th:text="'안녕하세요, ' + ${session.loginUser.nickname} + '님!'"></p>-->
-    <!--        <a th:href="@{/user/logout}">로그아웃</a>-->
-    <!--    </div>-->
-
-    <!--    <div th:unless="@{session.loginUser!=null}">-->
-    <!--        <a th:href="/user/login">로그인</a>-->
-    <!--        <a th:href="/user/signup">회원가입</a>-->
-    <!--    </div>-->
 </header>

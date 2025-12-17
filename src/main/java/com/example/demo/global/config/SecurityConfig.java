@@ -1,12 +1,16 @@
 package com.example.demo.global.config;
 
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 
+import java.nio.file.AccessDeniedException;
+
+@Slf4j
 @Configuration
 public class SecurityConfig {
     @Bean
@@ -18,7 +22,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/css/**", "/js/**", "/img/**",
                                 "/user/login", "/user/signup", "/post").permitAll()
-                        .requestMatchers("/user", "/user/myPage", "/user/myHistory", "/user/delete",
+                        .requestMatchers("/user", "/user/myHistory", "/user/delete",
                                 "/user/draft", "/post/write", "/post/*/edit", "/post/*/comment/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/post/*").authenticated()
                         .requestMatchers("/user/myPage","/user/pwPage").hasAnyRole("USER", "ADMIN", "SUPER_ADMIN")
@@ -33,7 +37,10 @@ public class SecurityConfig {
                         .usernameParameter("username")
                         .passwordParameter("password")
                         .defaultSuccessUrl("/", true)
-                        .failureUrl("/user/login?error=1")
+                        .failureHandler((request, response, authException) ->{
+                            log.warn("로그인 실패: [{}] {} 요청 by {}", request.getMethod(), request.getRequestURI(), request.getUserPrincipal(), authException);
+                            response.sendRedirect("/user/login?error=1");
+                        })
                         .permitAll()
                 )
 
@@ -43,10 +50,13 @@ public class SecurityConfig {
 
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint((request, response, authException) -> {
+                            log.warn("Authentication failed: [{}] {} 요청 by {}", request.getMethod(), request.getRequestURI(), request.getUserPrincipal(), authException);
                             response.sendRedirect("/user/login");
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            response.sendRedirect("/");
+                            log.warn("Access Denied: [{}] {} 요청 by {}", request.getMethod(), request.getRequestURI(), request.getUserPrincipal(), accessDeniedException);
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            request.getRequestDispatcher("/error/403").forward(request, response);
                         })
                 )
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymlealf.org">
+<html lang="ko" xmlns:th="http://www.thymlealf.org">
 <head>
     <meta charset="UTF-8">
     <title>유저관리</title>
@@ -8,7 +8,7 @@
     <script th:src="@{/js/motion.js}"></script>
 </head>
 <body>
-    <header th:replace="layout/header :: header"></header>
+    <header th:replace="~{layout/header :: header}"></header>
     <main id="adminUser" class="adminPages">
         <div>
             <h2>유저 관리</h2>

@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
         <title>마이페이지</title>
         <link rel="stylesheet" th:href="@{/css/style.css}">
     </head>
     <body>
-        <header th:replace="layout/header :: header"></header>
+        <header th:replace="~{layout/header :: header}"></header>
         <main id="pwPage" class="myPages">
             <div>
                 <h2>마이페이지</h2>
@@ -20,7 +19,7 @@
                         <li><a th:href="@{/user/delete}">계정 삭제</a></li>
                     </ul>
                 </nav>
-                <section><!--에러처리안함-->
+                <section>
                     <form th:action="@{/user/pwPage}" method="post">
                         <table>
                             <thead>

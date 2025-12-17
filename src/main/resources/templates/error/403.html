@@ -2,15 +2,15 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>메인 페이지</title>
+    <title>에러 403</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
     <header th:replace="~{layout/header :: header}"></header>
     <main>
-        <section id="main">
-            <h2><a th:href="@{/post}">게시판 바로가기</a></h2>
-        </section>
+        <div>
+            <p>접근이 제한된 페이지입니다.</p>
+        </div>
     </main>
 </body>
 </html>
