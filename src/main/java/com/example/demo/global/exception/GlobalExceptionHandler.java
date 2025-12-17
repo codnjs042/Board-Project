@@ -21,7 +21,8 @@ public class GlobalExceptionHandler {
                                         RedirectAttributes redirectAttrs,
                                         Exception e){
         String referer = request.getHeader("Referer");
-        String preUri = URI.create(referer).getPath();
+        String preUri = "/";
+        if(referer!=null) preUri = URI.create(referer).getPath();
         redirectAttrs.addFlashAttribute("error", e.getMessage());
         String errorType = e instanceof IllegalArgumentException?"Illegal Argument":"Illegal State";
         log.warn("{}: [{}] {} 요청 by {}", errorType, request.getMethod(), request.getRequestURI(), request.getUserPrincipal(), e);
@@ -40,10 +41,10 @@ public class GlobalExceptionHandler {
         return "redirect:/user/login";
     }
 
-    @ExceptionHandler({NoHandlerFoundException.class, NoResourceFoundException.class})
-    public String handleNotFound(HttpServletRequest request,
+    @ExceptionHandler(NoResourceFoundException.class)
+    public String handleNoResourceFound(HttpServletRequest request,
                                  RedirectAttributes redirectAttrs,
-                                 Exception e){
+                                 NoResourceFoundException e){
         redirectAttrs.addFlashAttribute("error", e.getMessage());
         log.error("404 Not Found: [{}] {} 요청 by {}", request.getMethod(), request.getRequestURI(), request.getUserPrincipal(), e);
         return "error/404";
