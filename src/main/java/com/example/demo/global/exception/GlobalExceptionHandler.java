@@ -3,6 +3,7 @@ package com.example.demo.global.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -11,6 +12,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.io.IOException;
 import java.net.URI;
 
 @Slf4j
@@ -42,20 +44,22 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public String handleNoResourceFound(HttpServletRequest request,
+    public void handleNoResourceFound(HttpServletRequest request,
+                                 HttpServletResponse response,
                                  RedirectAttributes redirectAttrs,
-                                 NoResourceFoundException e){
+                                 NoResourceFoundException e) throws IOException {
         redirectAttrs.addFlashAttribute("error", e.getMessage());
         log.error("404 Not Found: [{}] {} 요청 by {}", request.getMethod(), request.getRequestURI(), request.getUserPrincipal(), e);
-        return "error/404";
+        response.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)
-    public String handleException(HttpServletRequest request,
+    public void handleException(HttpServletRequest request,
+                                  HttpServletResponse response,
                                   RedirectAttributes redirectAttrs,
-                                  Exception e) {
+                                  Exception e) throws IOException {
         redirectAttrs.addFlashAttribute("error", e.getMessage());
         log.error("500 Internal Server Error: [{}] {} 요청 by {}", request.getMethod(), request.getRequestURI(), request.getUserPrincipal(), e);
-        return "error/500";
+        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 }

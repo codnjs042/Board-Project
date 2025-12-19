@@ -2,26 +2,18 @@ package com.example.demo.domain.user.controller;
 
 import com.example.demo.domain.user.dto.*;
 import com.example.demo.global.infra.kakao.component.KakaoComponent;
-import com.example.demo.global.infra.kakao.service.KakaoService;
 import com.example.demo.domain.post.domain.PostState;
 import com.example.demo.domain.post.dto.PostResponseDto;
 import com.example.demo.domain.post.service.PostService;
-import com.example.demo.domain.user.domain.UserRole;
 import com.example.demo.domain.user.service.UserService;
 import com.example.demo.global.security.CustomUserDetails;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -30,10 +22,9 @@ public class UserController {
     private final UserService userService;
     private final PostService postService;
     private final KakaoComponent kakaoComponent;
-    private final KakaoService kakaoService;
 
     @GetMapping
-    public String main(){
+    public String home(){
         return "index";
     }
 
@@ -115,24 +106,4 @@ public class UserController {
         model.addAttribute("draft", draft);
         return "user/draft";
     }
-
-//    @PostMapping("/user/login")
-//    public String login(@ModelAttribute UserLoginRequestDto dto, HttpSession session, Model model){
-//        try {
-//            UserResponseDto user = userService.login(dto);
-//            if(session.getAttribute("loginUser")!=null)
-//                session.invalidate();
-//            session.setAttribute("loginUser", user);
-//            return "redirect:/";
-//        } catch(IllegalArgumentException e){
-//            model.addAttribute("error", e.getMessage());
-//            return "redirect:/user/login";
-//        }
-//    }
-//
-//    @GetMapping("/user/logout")
-//    public String logout(HttpSession session){
-//        session.invalidate();
-//        return "redirect:/";
-//    }
 }
