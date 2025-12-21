@@ -17,9 +17,7 @@ public class UserStatusResponseDto {
         this.id=user.getId();
         this.status=user.getStatus();
         this.pendingAt=user.getPendingAt();
-        this.deadLine=(pendingAt!=null)
-                ?pendingAt.plusDays(30).withHour(23).withMinute(59).withSecond(59)
-                :null;
+        this.deadLine=user.getDeadLine();
     }
 
     public static UserStatusResponseDto from(User user){

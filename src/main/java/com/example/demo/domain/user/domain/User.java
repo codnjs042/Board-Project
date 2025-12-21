@@ -3,7 +3,6 @@ package com.example.demo.domain.user.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,27 +16,33 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length=30)
+    @Column(nullable = false, unique = true, length=12)
     private String username;
 
-    @Column(nullable = true)
+    @Column
     private String password;
 
-    @Column(nullable = false, length=30)
+    @Column(nullable = false, length=12)
     private String nickname;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private UserRole role;
+    private UserRole role = UserRole.USER;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private UserStatus status;
+    private UserStatus status = UserStatus.ACTIVE;
 
     @CreationTimestamp
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = true)
+    @Column
     private LocalDateTime pendingAt;
+
+    public LocalDateTime  getDeadLine(){
+        return pendingAt.plusDays(30).with(LocalDateTime.MAX);
+    }
 
     public void updatePassword(String password){
         this.password = password;

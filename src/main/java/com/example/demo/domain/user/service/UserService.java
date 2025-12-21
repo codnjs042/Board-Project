@@ -45,8 +45,6 @@ public class UserService {
                 .username(dto.getUsername())
                 .password(encodePw)
                 .nickname(dto.getNickname())
-                .role(UserRole.USER)
-                .status(UserStatus.ACTIVE)
                 .build();
         userRepository.save(user);
     }
