@@ -4,7 +4,6 @@ import com.example.demo.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,7 +21,8 @@ public class Post {
     @Column(nullable = false, length = 30)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Lob
+    @Column(nullable = false)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -36,11 +36,12 @@ public class Post {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column()
+    @Column
     private LocalDateTime updatedAt;
 
+    @Builder.Default
     @Column(nullable = false)
-    private int view;
+    private Long view = 0L;
 
     @ManyToMany
     private List<User> likes;
@@ -51,8 +52,9 @@ public class Post {
     @Enumerated(EnumType.STRING)
     private PostType type;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private PostStatus status;
+    private PostStatus status = PostStatus.ACTIVE;
 
     public void update(String title, String content, PostType type){
         this.title=title;

@@ -29,16 +29,14 @@ public class PostService {
     @Transactional
     public void create(PostRequestDto dto, String username){
         User author = userRepository.findByUsername(username)
-                .orElseThrow(()->new IllegalArgumentException("로그인 사용자를 찾을 수 없습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("로그인 사용자를 찾을 수 없습니다"));
         Post post = Post.builder()
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .author(author)
                 .authorName(author.getNickname())
-                .view(0)
                 .state(dto.getState())
                 .type(dto.getType())
-                .status(PostStatus.ACTIVE)
                 .build();
         postRepository.save(post);
     }
@@ -153,13 +151,16 @@ public class PostService {
     }
 
     @Transactional
-    public void delete(Long id, String username){
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다"));
+    public void delete(Long postId, Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("인증된 사용자 정보를 찾을 수 없습니다."));
 
-        if(!post.getAuthor().getUsername().equals(username)){
-            throw new IllegalStateException("작성자만 삭제할 수 있습니다");
-        }
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+
+        if(post.getAuthor().getId().equals(user.getId()))
+            throw new IllegalStateException("본인이 작성한 게시글만 삭제할 수 있습니다.");
+
         post.updateStatus(PostStatus.DISABLED);
     }
 }

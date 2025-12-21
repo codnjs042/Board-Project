@@ -6,8 +6,10 @@ import com.example.demo.domain.post.domain.PostState;
 import com.example.demo.domain.post.dto.PostRequestDto;
 import com.example.demo.domain.post.dto.PostResponseDto;
 import com.example.demo.domain.post.service.PostService;
+import com.example.demo.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +26,7 @@ public class PostController {
     @GetMapping("/write")
     public String write(@RequestParam(required = false) Long id, Model model){
         if (id != null) {
-            PostResponseDto post = postService.findById(id); // 여기서 id가 null이면 에러
+            PostResponseDto post = postService.findById(id);
             model.addAttribute("post", post);
         }
         return "post/write";
@@ -89,10 +91,10 @@ public class PostController {
         return "redirect:/post/" + id;
     }
 
-    @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Long id, Principal principal) {
-        if (principal == null) return "redirect:/user/login";
-        postService.delete(id, principal.getName());
+    @PostMapping("/{postId}/delete")
+    public String delete(@PathVariable Long postId,
+                         @AuthenticationPrincipal CustomUserDetails userDetails) {
+        postService.delete(postId, userDetails.getId());
         return "redirect:/post";
     }
 }

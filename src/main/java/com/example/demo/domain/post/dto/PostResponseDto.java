@@ -5,7 +5,6 @@ import com.example.demo.domain.post.domain.PostState;
 import com.example.demo.domain.post.domain.PostType;
 import com.example.demo.domain.user.domain.User;
 import lombok.Getter;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,6 +15,7 @@ public class PostResponseDto {
     private String content;
     private User author;
     private String authorName;
+    private Long view;
     private List<User> likes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -28,6 +28,7 @@ public class PostResponseDto {
         this.content=post.getContent();
         this.author=post.getAuthor();
         this.authorName=post.getAuthorName();
+        this.view=post.getView();
         this.likes=post.getLikes();
         this.createdAt=post.getCreatedAt();
         this.updatedAt=post.getUpdatedAt();
