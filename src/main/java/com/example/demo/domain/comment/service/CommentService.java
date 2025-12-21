@@ -1,6 +1,7 @@
 package com.example.demo.domain.comment.service;
 
 import com.example.demo.domain.comment.domain.Comment;
+import com.example.demo.domain.comment.domain.CommentStatus;
 import com.example.demo.domain.comment.dto.CommentRequestDto;
 import com.example.demo.domain.comment.dto.CommentResponseDto;
 import com.example.demo.domain.comment.repository.CommentRepository;
@@ -12,7 +13,6 @@ import com.example.demo.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 @Service
@@ -39,6 +39,7 @@ public class CommentService {
                 .author(author)
                 .authorName(author.getNickname())
                 .post(post)
+                .status(CommentStatus.ACTIVE)
                 .build();
         commentRepository.save(comment);
 
@@ -66,16 +67,16 @@ public class CommentService {
     }
 
     @Transactional
-    public void edit(Long id, CommentRequestDto dto){
+    public void modify(Long id, CommentRequestDto dto){
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다"));
-        comment.update(dto.getComment());
+        comment.modify(dto.getComment());
     }
 
     @Transactional
     public void delete(Long id){
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다"));
-        commentRepository.delete(comment);
+        comment.updateStatus(CommentStatus.DISABLED);
     }
 }

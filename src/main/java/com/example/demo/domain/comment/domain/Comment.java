@@ -46,7 +46,10 @@ public class Comment {
 
     private LocalDateTime UpdatedAt;
 
-    public void update(String comment){
+    @Enumerated(EnumType.STRING)
+    private CommentStatus status;
+
+    public void modify(String comment){
         this.comment=comment;
         this.UpdatedAt=LocalDateTime.now();
     }
@@ -58,4 +61,6 @@ public class Comment {
     public void updateChild(Comment child){
         this.child.add(child);
     }
+
+    public void updateStatus(CommentStatus status){this.status=status;}
 }

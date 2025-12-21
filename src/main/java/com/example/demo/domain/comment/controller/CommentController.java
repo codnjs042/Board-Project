@@ -3,12 +3,10 @@ package com.example.demo.domain.comment.controller;
 import com.example.demo.domain.comment.dto.CommentRequestDto;
 import com.example.demo.domain.comment.dto.CommentResponseDto;
 import com.example.demo.domain.comment.service.CommentService;
-import com.example.demo.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.security.Principal;
 
 @Controller
@@ -16,12 +14,6 @@ import java.security.Principal;
 @RequestMapping("/post/{postId}")
 public class CommentController {
     private final CommentService commentService;
-
-//    @GetMapping("/comment")
-//    @ResponseBody
-//    public List<CommentResponseDto> list(@PathVariable Long postId){
-//        return commentService.findAllByPost_Id(postId);
-//    }
 
     @PostMapping("/comment")
     public String write(
@@ -32,13 +24,13 @@ public class CommentController {
         if(editId==null)
             commentService.create(parentId, postId, dto, principal.getName());
         else
-            return edit(postId, editId, dto);
+            return modify(postId, editId, dto);
         return "redirect:/post/" + postId;
     }
 
     @PostMapping("/comment/{id}/edit")
-    public String edit(@PathVariable Long postId, Long id, @ModelAttribute CommentRequestDto dto){
-        commentService.edit(id, dto);
+    public String modify(@PathVariable Long postId, Long id, @ModelAttribute CommentRequestDto dto){
+        commentService.modify(id, dto);
         return "redirect:/post/" + postId;
     }
 

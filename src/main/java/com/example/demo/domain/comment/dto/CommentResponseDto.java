@@ -1,6 +1,7 @@
 package com.example.demo.domain.comment.dto;
 
 import com.example.demo.domain.comment.domain.Comment;
+import com.example.demo.domain.comment.domain.CommentStatus;
 import com.example.demo.domain.post.domain.Post;
 import com.example.demo.domain.user.domain.User;
 import lombok.Getter;
@@ -19,6 +20,7 @@ public class CommentResponseDto {
     private List<Comment> child;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private CommentStatus status;
 
     public CommentResponseDto(Comment comment){
         this.id = comment.getId();
@@ -30,6 +32,7 @@ public class CommentResponseDto {
         this.child = comment.getChild();
         this.createdAt = comment.getCreatedAt();
         this.updatedAt = comment.getUpdatedAt();
+        this.status = comment.getStatus();
     }
 
     public static CommentResponseDto from(Comment comment){
