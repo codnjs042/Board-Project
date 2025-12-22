@@ -5,6 +5,7 @@ import com.example.demo.domain.comment.domain.CommentStatus;
 import com.example.demo.domain.comment.dto.CommentRequestDto;
 import com.example.demo.domain.comment.dto.CommentResponseDto;
 import com.example.demo.domain.comment.repository.CommentRepository;
+import com.example.demo.domain.notice.service.NoticeService;
 import com.example.demo.domain.post.domain.Post;
 import com.example.demo.domain.post.domain.PostType;
 import com.example.demo.domain.post.repository.PostRepository;
@@ -21,6 +22,7 @@ public class CommentService {
     public final CommentRepository commentRepository;
     public final UserRepository userRepository;
     public final PostRepository postRepository;
+    public final NoticeService noticeService;
 
     @Transactional
     public void create(Long parentId, Long postId, CommentRequestDto dto, String username){
@@ -48,7 +50,9 @@ public class CommentService {
                     .orElseThrow(() -> new IllegalArgumentException("부모 댓글을 찾을 수 없습니다"));
             comment.updateParent(parent);
             parent.updateChild(comment);
+            noticeService.send(author, parent.getAuthor(), post);
         }
+        noticeService.send(author, post.getAuthor(), post);
     }
 
     @Transactional(readOnly = true)
