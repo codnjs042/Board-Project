@@ -44,6 +44,10 @@ public class User {
         return pendingAt.plusDays(30).with(LocalDateTime.MAX);
     }
 
+    public boolean isAdmin(){
+        return (role == UserRole.ADMIN) || (role == UserRole.SUPER_ADMIN);
+    }
+
     public void updatePassword(String password){
         this.password = password;
     }

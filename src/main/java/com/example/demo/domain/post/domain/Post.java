@@ -56,7 +56,7 @@ public class Post {
     @Enumerated(EnumType.STRING)
     private PostStatus status = PostStatus.ACTIVE;
 
-    public void update(String title, String content, PostType type){
+    public void modify(String title, String content, PostType type){
         this.title=title;
         this.content=content;
         this.type=type;

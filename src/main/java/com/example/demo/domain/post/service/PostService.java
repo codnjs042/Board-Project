@@ -3,6 +3,7 @@ package com.example.demo.domain.post.service;
 import com.example.demo.domain.post.domain.Post;
 import com.example.demo.domain.post.domain.PostState;
 import com.example.demo.domain.post.domain.PostStatus;
+import com.example.demo.domain.post.domain.PostType;
 import com.example.demo.domain.post.dto.PostRequestDto;
 import com.example.demo.domain.post.dto.PostResponseDto;
 import com.example.demo.domain.post.repository.PostRepository;
@@ -27,19 +28,64 @@ public class PostService {
     private final int pageSize = 10;
 
     @Transactional
-    public void create(PostRequestDto dto, String username){
-        User author = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("로그인 사용자를 찾을 수 없습니다"));
+    public void create(PostRequestDto dto, Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("인증된 사용자 정보를 찾을 수 없습니다."));
+
         Post post = Post.builder()
                 .title(dto.getTitle())
                 .content(dto.getContent())
-                .author(author)
-                .authorName(author.getNickname())
+                .author(user)
+                .authorName(user.getNickname())
                 .state(dto.getState())
                 .type(dto.getType())
                 .build();
+
         postRepository.save(post);
     }
+
+    @Transactional(readOnly = true)
+    public PostResponseDto getPostDetail(Long postId){
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+
+        if(post.getStatus().equals(PostStatus.DISABLED))
+            throw new IllegalArgumentException("현재 삭제된 게시글입니다.");
+
+        return PostResponseDto.from(post);
+    }
+
+    @Transactional(readOnly = true)
+    public PostResponseDto getPostForEdit(Long postId, Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("인증된 사용자 정보를 찾을 수 없습니다."));
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+
+        if(!post.getAuthor().getId().equals(user.getId()))
+            throw new IllegalArgumentException("해당 게시글의 수정 권한이 없습니다.");
+
+        return PostResponseDto.from(post);
+    }
+
+    @Transactional
+    public void modify(Long postId, PostRequestDto dto, Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("인증된 사용자 정보를 찾을 수 없습니다."));
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+
+        if(!post.getAuthor().getId().equals(user.getId()))
+            throw new IllegalArgumentException("해당 게시글의 수정 권한이 없습니다.");
+
+        if (!user.isAdmin() && dto.getType().equals(PostType.NOTICE))
+            throw new IllegalArgumentException("공지사항 설정 권한이 없습니다.");
+
+        post.modify(dto.getTitle(), dto.getContent(), dto.getType());
+    }
+
 
     @Transactional(readOnly = true)
     public Page<PostResponseDto> findAllPost(PostState state, int page){
@@ -103,13 +149,6 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostResponseDto findById(Long id){
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다"));
-        return new PostResponseDto(post);
-    }
-
-    @Transactional(readOnly = true)
     public boolean myLike(Long id, String username){
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("로그인 사용자를 찾을 수 없습니다"));
@@ -128,29 +167,6 @@ public class PostService {
     }
 
     @Transactional
-    public void update(Long id, PostRequestDto dto, String username){
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
-
-        if(!post.getAuthor().getUsername().equals(username)){
-            throw new IllegalStateException("작성자만 수정할 수 있습니다");
-        }
-        post.update(dto.getTitle(),dto.getContent(), dto.getType());
-    }
-
-    @Transactional
-    public void upload(Long id, PostRequestDto dto, String username){
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
-
-        if(!post.getAuthor().getUsername().equals(username)){
-            throw new IllegalStateException("작성자만 공개 게시할 수 있습니다");
-        }
-        post.update(dto.getTitle(),dto.getContent(), dto.getType());
-        if(dto.getState()== PostState.PUBLISHED) post.updateState(dto.getState());
-    }
-
-    @Transactional
     public void delete(Long postId, Long userId){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalStateException("인증된 사용자 정보를 찾을 수 없습니다."));
@@ -159,7 +175,7 @@ public class PostService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
 
         if(post.getAuthor().getId().equals(user.getId()))
-            throw new IllegalStateException("본인이 작성한 게시글만 삭제할 수 있습니다.");
+            throw new IllegalArgumentException("해당 게시글의 삭제 권한이 없습니다.");
 
         post.updateStatus(PostStatus.DISABLED);
     }

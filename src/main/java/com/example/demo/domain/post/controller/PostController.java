@@ -23,31 +23,11 @@ public class PostController {
     public final PostService postService;
     public final CommentService commentService;
 
-    @GetMapping("/write")
-    public String write(@RequestParam(required = false) Long id, Model model){
-        if (id != null) {
-            PostResponseDto post = postService.findById(id);
-            model.addAttribute("post", post);
-        }
-        return "post/write";
-    }
-
-    @PostMapping("/write")
-    public String write(@RequestParam(required = false) Long id,
-                        @ModelAttribute PostRequestDto dto,
-                        Principal principal){
-        if(principal==null) return "redirect:/user/login";
-        if(id!=null) postService.upload(id, dto, principal.getName());
-        else postService.create(dto, principal.getName());
-        return "redirect:/post";
-    }
-
     @GetMapping
-    public String list(
-            @RequestParam(defaultValue="0") int page,
-            @RequestParam(required=false) String keyword,
-            @RequestParam(required=false) String type,
-            Model model){
+    public String list(@RequestParam(defaultValue="0") int page,
+                       @RequestParam(required=false) String keyword,
+                       @RequestParam(required=false) String type,
+                       Model model){
         Page<PostResponseDto> postPage
                 = (keyword!=null && !keyword.isBlank())
                 ? postService.searchPost(PostState.PUBLISHED, keyword, type, page)
@@ -57,11 +37,24 @@ public class PostController {
         return "post/list";
     }
 
-    @GetMapping("/{id}")
-    public String detail(@PathVariable Long id, Model model){
-        PostResponseDto post = postService.findById(id);
+    @GetMapping("/write")
+    public String writeForm(){
+        return "post/write";
+    }
+
+    @PostMapping("/write")
+    public String write(@ModelAttribute PostRequestDto dto,
+                        @AuthenticationPrincipal CustomUserDetails userDetails){
+        postService.create(dto, userDetails.getId());
+        return "redirect:/post";
+    }
+
+    @GetMapping("/{postId}")
+    public String detail(@PathVariable Long postId,
+                         Model model){
+        PostResponseDto post = postService.getPostDetail(postId);
         model.addAttribute("post", post);
-        List<CommentResponseDto> comments = commentService.findAll(id);
+        List<CommentResponseDto> comments = commentService.findAll(postId);
         model.addAttribute("comments", comments);
         return "post/detail";
     }
@@ -76,19 +69,21 @@ public class PostController {
         return "redirect:/post/{id}";
     }
 
-    @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Long id, Model model, Principal principal){
-        if(principal==null) return "redirect:/user/login";
-        PostResponseDto post = postService.findById(id);
+    @GetMapping("/{postId}/edit")
+    public String editForm(@PathVariable Long postId,
+                           @AuthenticationPrincipal CustomUserDetails userDetails,
+                           Model model){
+        PostResponseDto post = postService.getPostForEdit(postId, userDetails.getId());
         model.addAttribute("post", post);
         return "post/edit";
     }
 
-    @PostMapping("/{id}/edit")
-    public String edit(@PathVariable Long id, @ModelAttribute PostRequestDto dto, Principal principal){
-        if(principal==null) return "redirect:/user/login";
-        postService.update(id, dto, principal.getName());
-        return "redirect:/post/" + id;
+    @PostMapping("/{postId}/edit")
+    public String edit(@PathVariable Long postId,
+                       @ModelAttribute PostRequestDto dto,
+                       @AuthenticationPrincipal CustomUserDetails userDetails){
+        postService.modify(postId, dto, userDetails.getId());
+        return "redirect:/post/{postId}";
     }
 
     @PostMapping("/{postId}/delete")
