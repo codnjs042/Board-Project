@@ -14,21 +14,20 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
-    Optional<Post> findByIdAndLikes(Long id, User user);
 
-    // 공개된 모든 유저 목록
-    Page<Post> findByStatusAndStateOrderByTypeDesc(PostStatus status, PostState state, Pageable pageable);
-
-    // 공개된 모든유저 검색
-    Page<Post> findByStatusAndStateAndTitleContaining(
-            PostStatus status, PostState state, String keyword, Pageable pageable
-    );
-    Page<Post> findByStatusAndStateAndContentContaining(
-            PostStatus status, PostState state, String keyword, Pageable pageable
-    );
-    Page<Post> findByStatusAndStateAndAuthorNameContaining(
-            PostStatus status, PostState state, String keyword, Pageable pageable
-    );
+    // 사용자 게시글 조회
+    @Query("select p from Post p " +
+            "where p.state=:state " +
+            "and p.status=:status " +
+            "and (:keyword is null or " +
+                "(:type='title' and p.title like %:keyword%) or" +
+                "(:type='content' and p.content like %:keyword%) or " +
+                "(:type='author' and p.author.nickname like %:keyword%))")
+    Page<Post> findPosts(@Param("state") PostState state,
+                         @Param("status") PostStatus status,
+                         @Param("type") String type,
+                         @Param("keyword") String keyword,
+                         Pageable pageable);
 
     // 공개/비공개된 단독 유저 목록
     Page<Post> findByStatusAndAuthor_UsernameAndState(PostStatus status, String username, PostState state, Pageable pageable);

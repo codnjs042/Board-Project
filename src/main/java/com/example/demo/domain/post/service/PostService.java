@@ -45,6 +45,15 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
+    public Page<PostResponseDto> getPosts(int page, String type, String keyword){
+        Pageable pageable = PageRequest.of(page, pageSize,
+                Sort.by(Sort.Order.desc("type"), Sort.Order.desc("createdAt")));
+
+        return postRepository.findPosts(PostState.PUBLISHED, PostStatus.ACTIVE, type, keyword, pageable)
+                .map(PostResponseDto::from);
+    }
+
+    @Transactional(readOnly = true)
     public PostResponseDto getPostDetail(Long postId){
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
@@ -86,14 +95,18 @@ public class PostService {
         post.modify(dto.getTitle(), dto.getContent(), dto.getType());
     }
 
+    @Transactional
+    public void delete(Long postId, Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("인증된 사용자 정보를 찾을 수 없습니다."));
 
-    @Transactional(readOnly = true)
-    public Page<PostResponseDto> findAllPost(PostState state, int page){
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
-        if(state!=PostState.PUBLISHED){
-            throw new IllegalStateException("정상 업로드된 게시글만 열람 가능합니다");
-        }
-        return postRepository.findByStatusAndStateOrderByTypeDesc(PostStatus.ACTIVE, state, pageable).map(PostResponseDto::from);
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+
+        if(post.getAuthor().getId().equals(user.getId()))
+            throw new IllegalArgumentException("해당 게시글의 삭제 권한이 없습니다.");
+
+        post.updateStatus(PostStatus.DISABLED);
     }
 
     @Transactional(readOnly = true)
@@ -114,24 +127,6 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PostResponseDto> searchPost(PostState state, String keyword, String type, int page){
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
-
-        if(state!=PostState.PUBLISHED){
-            throw new IllegalStateException("정상 업로드된 게시글만 열람 가능합니다");
-        }
-
-        Page<Post> result = switch (type) {
-            case "title" -> postRepository.findByStatusAndStateAndTitleContaining(PostStatus.ACTIVE, state, keyword, pageable);
-            case "content" -> postRepository.findByStatusAndStateAndContentContaining(PostStatus.ACTIVE, state, keyword, pageable);
-            case "author" -> postRepository.findByStatusAndStateAndAuthorNameContaining(PostStatus.ACTIVE, state, keyword, pageable);
-            default -> Page.empty(pageable);
-        };
-
-        return result.map(PostResponseDto::from);
-    }
-
-    @Transactional(readOnly = true)
     public Page<PostResponseDto> searchMyPost(String username, PostState state, String keyword, String type, int page){
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
 
@@ -146,37 +141,5 @@ public class PostService {
         };
 
         return result.map(PostResponseDto::from);
-    }
-
-    @Transactional(readOnly = true)
-    public boolean myLike(Long id, String username){
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("로그인 사용자를 찾을 수 없습니다"));
-        return postRepository.findByIdAndLikes(id, user).isPresent();
-    }
-
-    @Transactional
-    public void likeToggle(Long id, String username){
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("로그인 사용자를 찾을 수 없습니다"));
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
-        if(post.getAuthor().getUsername().equals(username))
-            throw new IllegalArgumentException("본인 게시글의 좋아요를 누를 수 없습니다");
-        else post.toggleLike(user);
-    }
-
-    @Transactional
-    public void delete(Long postId, Long userId){
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalStateException("인증된 사용자 정보를 찾을 수 없습니다."));
-
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
-
-        if(post.getAuthor().getId().equals(user.getId()))
-            throw new IllegalArgumentException("해당 게시글의 삭제 권한이 없습니다.");
-
-        post.updateStatus(PostStatus.DISABLED);
     }
 }

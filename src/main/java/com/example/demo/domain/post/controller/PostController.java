@@ -2,7 +2,6 @@ package com.example.demo.domain.post.controller;
 
 import com.example.demo.domain.comment.dto.CommentResponseDto;
 import com.example.demo.domain.comment.service.CommentService;
-import com.example.demo.domain.post.domain.PostState;
 import com.example.demo.domain.post.dto.PostRequestDto;
 import com.example.demo.domain.post.dto.PostResponseDto;
 import com.example.demo.domain.post.service.PostService;
@@ -25,13 +24,11 @@ public class PostController {
 
     @GetMapping
     public String list(@RequestParam(defaultValue="0") int page,
-                       @RequestParam(required=false) String keyword,
                        @RequestParam(required=false) String type,
+                       @RequestParam(required=false) String keyword,
                        Model model){
         Page<PostResponseDto> postPage
-                = (keyword!=null && !keyword.isBlank())
-                ? postService.searchPost(PostState.PUBLISHED, keyword, type, page)
-                : postService.findAllPost(PostState.PUBLISHED, page);
+                = postService.getPosts(page, type, keyword);
         model.addAttribute("postPage", postPage);
         model.addAttribute("keyword", keyword);
         return "post/list";
@@ -57,16 +54,6 @@ public class PostController {
         List<CommentResponseDto> comments = commentService.findAll(postId);
         model.addAttribute("comments", comments);
         return "post/detail";
-    }
-
-    @PostMapping("/{id}")
-    public String postLike(@PathVariable Long id, Principal principal, Model model){
-        postService.likeToggle(id, principal.getName());
-
-        boolean myLike = postService.myLike(id, principal.getName());
-        model.addAttribute("myLike", myLike);
-
-        return "redirect:/post/{id}";
     }
 
     @GetMapping("/{postId}/edit")

@@ -36,7 +36,7 @@
                     <button type="submit"
                             th:disabled="${#authentication.name} == ${post.author.username}"
                             th:data-like="${myLike}">
-                        좋아요 <span th:text="${#lists.isEmpty(post.likes)?0:#lists.size(post.likes)}"></span>
+                        좋아요 <span th:text="${post.likeCount}"></span>
                     </button>
                 </form>
             </div>
