@@ -1,7 +1,6 @@
 package com.example.demo.domain.post.controller;
 
-import com.example.demo.domain.comment.dto.CommentResponseDto;
-import com.example.demo.domain.comment.service.CommentService;
+import com.example.demo.domain.post.dto.PostDetailDto;
 import com.example.demo.domain.post.dto.PostRequestDto;
 import com.example.demo.domain.post.dto.PostResponseDto;
 import com.example.demo.domain.post.service.PostService;
@@ -12,15 +11,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import java.security.Principal;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/post")
 public class PostController {
     public final PostService postService;
-    public final CommentService commentService;
 
     @GetMapping
     public String list(@RequestParam(defaultValue="0") int page,
@@ -48,11 +44,10 @@ public class PostController {
 
     @GetMapping("/{postId}")
     public String detail(@PathVariable Long postId,
+                         @AuthenticationPrincipal CustomUserDetails userDetails,
                          Model model){
-        PostResponseDto post = postService.getPostDetail(postId);
-        model.addAttribute("post", post);
-        List<CommentResponseDto> comments = commentService.findAll(postId);
-        model.addAttribute("comments", comments);
+        PostDetailDto postDetail = postService.getPostDetail(postId, userDetails);
+        model.addAttribute("postDetail", postDetail);
         return "post/detail";
     }
 

@@ -14,7 +14,6 @@ import com.example.demo.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +44,8 @@ public class CommentService {
                 .build();
         commentRepository.save(comment);
 
+        post.updateCommentCount(1L);
+
         if(parentId!=null){
             Comment parent = commentRepository.findById(parentId)
                     .orElseThrow(() -> new IllegalArgumentException("부모 댓글을 찾을 수 없습니다"));
@@ -53,14 +54,6 @@ public class CommentService {
             noticeService.send(author, parent.getAuthor(), post);
         }
         noticeService.send(author, post.getAuthor(), post);
-    }
-
-    @Transactional(readOnly = true)
-    public List<CommentResponseDto> findAll(Long id){
-        return commentRepository.findAllByPost_IdAndParentIsNull(id)
-                .stream()
-                .map(CommentResponseDto::new)
-                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -82,5 +75,6 @@ public class CommentService {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다"));
         comment.updateStatus(CommentStatus.DISABLED);
+        comment.getPost().updateCommentCount(1L);
     }
 }

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Post {
+public class Post{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,6 +46,10 @@ public class Post {
     @Column(nullable = false)
     private Long likeCount = 0L;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private Long commentCount = 0L;
+
     @Enumerated(EnumType.STRING)
     private PostType type;
 
@@ -64,9 +68,11 @@ public class Post {
             updatedAt = LocalDateTime.now();
     }
 
-    public void updatelikeCount(Long amount){
+    public void updateLikeCount(Long amount){
         likeCount+=1;
     }
+
+    public void updateCommentCount(Long amount) {commentCount+=1;}
 
     public void updateStatus(PostStatus status){
         this.status=status;

@@ -3,7 +3,6 @@ package com.example.demo.domain.post.repository;
 import com.example.demo.domain.post.domain.Post;
 import com.example.demo.domain.post.domain.PostState;
 import com.example.demo.domain.post.domain.PostStatus;
-import com.example.demo.domain.user.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

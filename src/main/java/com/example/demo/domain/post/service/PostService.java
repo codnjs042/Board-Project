@@ -1,9 +1,15 @@
 package com.example.demo.domain.post.service;
 
+import com.example.demo.domain.comment.domain.CommentStatus;
+import com.example.demo.domain.comment.dto.CommentResponseDto;
+import com.example.demo.domain.comment.repository.CommentRepository;
+import com.example.demo.domain.like.domain.LikeStatus;
+import com.example.demo.domain.like.repository.LikeRepository;
 import com.example.demo.domain.post.domain.Post;
 import com.example.demo.domain.post.domain.PostState;
 import com.example.demo.domain.post.domain.PostStatus;
 import com.example.demo.domain.post.domain.PostType;
+import com.example.demo.domain.post.dto.PostDetailDto;
 import com.example.demo.domain.post.dto.PostRequestDto;
 import com.example.demo.domain.post.dto.PostResponseDto;
 import com.example.demo.domain.post.repository.PostRepository;
@@ -25,6 +31,8 @@ import java.util.stream.Collectors;
 public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
+    private final LikeRepository likeRepository;
     private final int pageSize = 10;
 
     @Transactional
@@ -54,14 +62,23 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostResponseDto getPostDetail(Long postId){
+    public PostDetailDto getPostDetail(Long postId, CustomUserDetails userDetails){
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
 
         if(post.getStatus().equals(PostStatus.DISABLED))
             throw new IllegalArgumentException("현재 삭제된 게시글입니다.");
 
-        return PostResponseDto.from(post);
+        List<CommentResponseDto> comment = commentRepository.findAllByPost_IdAndStatusAndParentIsNull(post.getId(), CommentStatus.ACTIVE)
+                .stream()
+                .map(CommentResponseDto::from)
+                .toList();
+
+        Boolean isLiked = false;
+        if(userDetails!=null)
+            isLiked = likeRepository.existsByUserIdAndPostIdAndStatus(userDetails.getId(), post.getId(), LikeStatus.ACTIVE);
+
+        return new PostDetailDto(PostResponseDto.from(post), isLiked, comment);
     }
 
     @Transactional(readOnly = true)

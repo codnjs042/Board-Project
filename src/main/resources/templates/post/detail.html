@@ -11,7 +11,7 @@
 </head>
 <body>
     <header th:replace="~{layout/header :: header}"></header>
-    <main id="detailPage">
+    <main id="detailPage" th:object="${postDetail}" th:with="post=*{postDto}, comments=*{commentDto}" >
         <section>
             <h3>게시글 상세</h3>
             <p><strong>제목 : </strong><span th:text="${post.title}"></span></p>
@@ -35,7 +35,7 @@
                 <form th:action="@{|/post/${post.id}|}" method="post">
                     <button type="submit"
                             th:disabled="${#authentication.name} == ${post.author.username}"
-                            th:data-like="${myLike}">
+                            th:data-like="*{isLiked}">
                         좋아요 <span th:text="${post.likeCount}"></span>
                     </button>
                 </form>
