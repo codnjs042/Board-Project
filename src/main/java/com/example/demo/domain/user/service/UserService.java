@@ -17,8 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -49,7 +50,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-    @Transactional
     public UserResponseDto userInfo(CustomUserDetails userDetails) {
         User user = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new IllegalStateException("인증된 사용자 정보를 찾을 수 없습니다."));
@@ -93,12 +93,10 @@ public class UserService {
         throw new ForceLogoutException("비밀번호가 변경되어 로그아웃되었습니다. 다시 로그인 해주세요.");
     }
 
-    @Transactional(readOnly = true)
     public Page<PostResponseDto> findAllMyPost(String username, PostState status, int page) {
         return postService.findAllMyPost(username, status, page);
     }
 
-    @Transactional(readOnly = true)
     public Page<PostResponseDto> searchMyPost(String username, PostState status, String keyword, String type, int page) {
         return postService.searchMyPost(username, status, keyword, type, page);
     }
@@ -120,7 +118,6 @@ public class UserService {
         else throw new ForceLogoutException("계정이 비활성화되어 삭제/복구 요청을 처리할 수 없습니다. 관리자에게 문의하세요.");
     }
 
-    @Transactional
     public UserStatusResponseDto userStatus(CustomUserDetails userDetails){
         User user = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new IllegalStateException("인증된 사용자 정보를 찾을 수 없습니다."));

@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CommentService {
     public final CommentRepository commentRepository;
     public final UserRepository userRepository;
@@ -56,7 +57,6 @@ public class CommentService {
         noticeService.send(author, post.getAuthor(), post);
     }
 
-    @Transactional(readOnly = true)
     public CommentResponseDto findById(Long id){
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다"));

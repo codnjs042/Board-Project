@@ -7,14 +7,15 @@ import com.example.demo.domain.post.domain.Post;
 import com.example.demo.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class NoticeService {
     private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
     private final NoticeRepository noticeRepository;
@@ -31,6 +32,7 @@ public class NoticeService {
         return emitter;
     }
 
+    @Transactional
     public void send(User sendUser, User receiveUser, Post post){
         SseEmitter emitter = emitters.get(receiveUser.getId());
 

@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
@@ -52,7 +53,6 @@ public class PostService {
         postRepository.save(post);
     }
 
-    @Transactional(readOnly = true)
     public Page<PostResponseDto> getPosts(int page, String type, String keyword){
         Pageable pageable = PageRequest.of(page, pageSize,
                 Sort.by(Sort.Order.desc("type"), Sort.Order.desc("createdAt")));
@@ -61,7 +61,6 @@ public class PostService {
                 .map(PostResponseDto::from);
     }
 
-    @Transactional(readOnly = true)
     public PostDetailDto getPostDetail(Long postId, CustomUserDetails userDetails){
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
@@ -81,7 +80,6 @@ public class PostService {
         return new PostDetailDto(PostResponseDto.from(post), isLiked, comment);
     }
 
-    @Transactional(readOnly = true)
     public PostResponseDto getPostForEdit(Long postId, Long userId){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("인증된 사용자 정보를 찾을 수 없습니다."));
@@ -126,7 +124,6 @@ public class PostService {
         post.updateStatus(PostStatus.DISABLED);
     }
 
-    @Transactional(readOnly = true)
     public Page<PostResponseDto> findAllMyPost(String username, PostState state, int page){
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
         if(state!=PostState.PUBLISHED){
@@ -135,7 +132,6 @@ public class PostService {
         return postRepository.findByStatusAndAuthor_UsernameAndState(PostStatus.ACTIVE, username, state, pageable).map(PostResponseDto::from);
     }
 
-    @Transactional(readOnly = true)
     public List<PostResponseDto> findDraft(CustomUserDetails userDetails, PostState state){
         return postRepository.findByStatusAndAuthor_UsernameAndStateOrderByUpdatedAtDesc(PostStatus.ACTIVE, userDetails.getUsername(), state)
                 .stream()
@@ -143,7 +139,6 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
     public Page<PostResponseDto> searchMyPost(String username, PostState state, String keyword, String type, int page){
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
 

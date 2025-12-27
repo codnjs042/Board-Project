@@ -5,7 +5,6 @@ import com.example.demo.domain.admin.dto.PostAdminResponseDto;
 import com.example.demo.domain.admin.dto.UserAdminRequestDto;
 import com.example.demo.domain.admin.dto.UserAdminResponseDto;
 import com.example.demo.domain.post.domain.Post;
-import com.example.demo.domain.post.domain.PostState;
 import com.example.demo.domain.post.domain.PostStatus;
 import com.example.demo.domain.post.repository.PostRepository;
 import com.example.demo.domain.user.domain.User;
@@ -19,11 +18,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AdminService {
     public final UserRepository userRepository;
     public final PostRepository postRepository;
