@@ -9,8 +9,6 @@ import java.time.LocalDateTime;
 @Table(name="users")
 @Getter
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,13 +23,11 @@ public class User {
     @Column(nullable = false, length=12)
     private String nickname;
 
-    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private UserRole role = UserRole.USER;
+    private UserRole role;
 
-    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private UserStatus status = UserStatus.ACTIVE;
+    private UserStatus status;
 
     @CreationTimestamp
     @Column(nullable = false)
@@ -39,6 +35,15 @@ public class User {
 
     @Column
     private LocalDateTime pendingAt;
+
+    @Builder
+    public User(String username, String password, String nickname, UserRole role, UserStatus status){
+        this.username=username;
+        this.password=password;
+        this.nickname=nickname;
+        this.role=(role==null)?UserRole.USER:role;
+        this.status=(status==null)?UserStatus.ACTIVE:status;
+    }
 
     public LocalDateTime  getDeadLine(){
         return pendingAt.plusDays(30).with(LocalDateTime.MAX);

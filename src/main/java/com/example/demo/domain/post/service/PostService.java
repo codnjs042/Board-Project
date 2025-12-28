@@ -46,8 +46,8 @@ public class PostService {
                 .content(dto.getContent())
                 .author(user)
                 .authorName(user.getNickname())
-                .state(dto.getState())
                 .type(dto.getType())
+                .state(dto.getState())
                 .build();
 
         postRepository.save(post);

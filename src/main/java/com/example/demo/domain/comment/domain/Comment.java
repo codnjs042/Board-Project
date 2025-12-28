@@ -5,7 +5,6 @@ import com.example.demo.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -13,8 +12,6 @@ import java.util.List;
 @Table(name="comments")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,7 +44,16 @@ public class Comment {
     private LocalDateTime UpdatedAt;
 
     @Enumerated(EnumType.STRING)
-    private CommentStatus status;
+    private CommentStatus status = CommentStatus.ACTIVE;
+
+    @Builder
+    public Comment(String comment, User author, String authorName, Post post, CommentStatus status){
+        this.comment=comment;
+        this.author=author;
+        this.authorName=authorName;
+        this.post=post;
+        this.status=(status==null)?CommentStatus.ACTIVE:status;
+    }
 
     public void modify(String comment){
         this.comment=comment;

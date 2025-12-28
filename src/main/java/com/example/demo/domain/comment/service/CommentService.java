@@ -41,7 +41,6 @@ public class CommentService {
                 .author(author)
                 .authorName(author.getNickname())
                 .post(post)
-                .status(CommentStatus.ACTIVE)
                 .build();
         commentRepository.save(comment);
 

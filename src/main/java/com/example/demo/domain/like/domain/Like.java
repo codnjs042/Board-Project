@@ -10,9 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Table(name="likes")
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,9 +28,15 @@ public class Like {
     @Column(nullable = false)
     private LocalDateTime likeAt;
 
-    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private LikeStatus status = LikeStatus.ACTIVE;
+    private LikeStatus status;
+
+    @Builder
+    public Like(User user, Post post, LikeStatus status){
+        this.user=user;
+        this.post=post;
+        this.status=(status==null)?LikeStatus.ACTIVE:status;
+    }
 
     public void updateStatus(LikeStatus status){
         this.status = status;

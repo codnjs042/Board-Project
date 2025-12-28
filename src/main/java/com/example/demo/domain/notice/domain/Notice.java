@@ -11,9 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Table(name="notices")
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class Notice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,11 +33,18 @@ public class Notice {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Builder.Default
     @Enumerated(EnumType.STRING)
     private NoticeState state = NoticeState.UNCHECK;
 
-    @Builder.Default
     @Enumerated(EnumType.STRING)
     private NoticeStatus status = NoticeStatus.ACTIVE;
+
+    @Builder
+    public Notice(User sendUser, User receiveUser, Post post, NoticeState state, NoticeStatus status){
+        this.sendUser=sendUser;
+        this.receiveUser=receiveUser;
+        this.post=post;
+        this.state=(state==null)?NoticeState.UNCHECK:state;
+        this.status=(status==null)?NoticeStatus.ACTIVE:status;
+    }
 }

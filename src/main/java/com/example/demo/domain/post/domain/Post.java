@@ -10,8 +10,6 @@ import java.time.LocalDateTime;
 @Table(name="posts")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 public class Post{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,17 +36,14 @@ public class Post{
     @Column
     private LocalDateTime updatedAt;
 
-    @Builder.Default
     @Column(nullable = false)
-    private Long view = 0L;
+    private Long view;
 
-    @Builder.Default
     @Column(nullable = false)
-    private Long likeCount = 0L;
+    private Long likeCount;
 
-    @Builder.Default
     @Column(nullable = false)
-    private Long commentCount = 0L;
+    private Long commentCount;
 
     @Enumerated(EnumType.STRING)
     private PostType type;
@@ -56,9 +51,22 @@ public class Post{
     @Enumerated(EnumType.STRING)
     private PostState state;
 
-    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private PostStatus status = PostStatus.ACTIVE;
+    private PostStatus status;
+
+    @Builder
+    public Post(String title, String content, User author, String authorName, PostType type, PostState state, PostStatus status){
+        this.title=title;
+        this.content=content;
+        this.author=author;
+        this.authorName=authorName;
+        this.view=0L;
+        this.likeCount=0L;
+        this.commentCount=0L;
+        this.type=type;
+        this.state=state;
+        this.status=(status==null)?PostStatus.ACTIVE:status;
+    }
 
     public void modify(String title, String content, PostType type){
         this.title=title;
