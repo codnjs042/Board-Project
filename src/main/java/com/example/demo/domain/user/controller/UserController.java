@@ -1,12 +1,11 @@
 package com.example.demo.domain.user.controller;
 
-import com.example.demo.domain.post.domain.PostStatus;
-import com.example.demo.domain.post.service.PostQueryService;
+import com.example.demo.domain.post.service.PostService;
 import com.example.demo.domain.user.dto.*;
+import com.example.demo.domain.user.service.UserFacade;
 import com.example.demo.global.infra.kakao.component.KakaoComponent;
 import com.example.demo.domain.post.domain.PostState;
 import com.example.demo.domain.post.dto.PostResponseDto;
-import com.example.demo.domain.post.service.PostService;
 import com.example.demo.domain.user.service.UserService;
 import com.example.demo.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -15,14 +14,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import java.security.Principal;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
 public class UserController {
     private final UserService userService;
-    private final PostQueryService postQueryService;
+    private final UserFacade userFacade;
     private final KakaoComponent kakaoComponent;
 
     @GetMapping
@@ -63,7 +60,7 @@ public class UserController {
     public String myHistory(@RequestParam(defaultValue="0") int page,
                             @AuthenticationPrincipal CustomUserDetails userDetails,
                             Model model){
-        Page<PostResponseDto> PostPage = postQueryService.getUserPosts(userDetails.getId(), PostState.PUBLISHED, page);
+        Page<PostResponseDto> PostPage = userFacade.getUserPosts(userDetails.getId(), PostState.PUBLISHED, page);
         model.addAttribute("postPage", PostPage);
         return "user/myHistory";
     }
@@ -98,7 +95,7 @@ public class UserController {
     public String draft(@RequestParam(defaultValue="0") int page,
                         @AuthenticationPrincipal CustomUserDetails userDetails,
                         Model model){
-        Page<PostResponseDto> draft = postQueryService.getUserPosts(userDetails.getId(), PostState.DRAFT, page);
+        Page<PostResponseDto> draft = userFacade.getUserPosts(userDetails.getId(), PostState.DRAFT, page);
         model.addAttribute("draft", draft);
         return "user/draft";
     }
