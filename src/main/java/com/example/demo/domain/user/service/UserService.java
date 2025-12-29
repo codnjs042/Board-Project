@@ -1,8 +1,5 @@
 package com.example.demo.domain.user.service;
 
-import com.example.demo.domain.post.domain.PostState;
-import com.example.demo.domain.post.dto.PostResponseDto;
-import com.example.demo.domain.post.service.PostService;
 import com.example.demo.domain.user.domain.UserRole;
 import com.example.demo.domain.user.domain.User;
 import com.example.demo.domain.user.domain.UserStatus;
@@ -11,7 +8,6 @@ import com.example.demo.domain.user.repository.UserRepository;
 import com.example.demo.global.exception.ForceLogoutException;
 import com.example.demo.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +19,6 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final PostService postService;
 
     @Transactional
     public void signup(UserSignupRequestDto dto){
@@ -48,6 +43,11 @@ public class UserService {
                 .nickname(dto.getNickname())
                 .build();
         userRepository.save(user);
+    }
+
+    public User getUserId(Long userId){
+        return userRepository.findById(userId)
+                .orElseThrow(()-> new IllegalArgumentException("로그인 사용자를 찾을 수 없습니다"));
     }
 
     public UserResponseDto userInfo(CustomUserDetails userDetails) {
@@ -91,14 +91,6 @@ public class UserService {
         String encodePw = passwordEncoder.encode(pwDto.getNewPw());
         user.updatePassword(encodePw);
         throw new ForceLogoutException("비밀번호가 변경되어 로그아웃되었습니다. 다시 로그인 해주세요.");
-    }
-
-    public Page<PostResponseDto> findAllMyPost(String username, PostState status, int page) {
-        return postService.findAllMyPost(username, status, page);
-    }
-
-    public Page<PostResponseDto> searchMyPost(String username, PostState status, String keyword, String type, int page) {
-        return postService.searchMyPost(username, status, keyword, type, page);
     }
 
     @Transactional

@@ -22,11 +22,21 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                 "(:type='title' and p.title like %:keyword%) or" +
                 "(:type='content' and p.content like %:keyword%) or " +
                 "(:type='author' and p.author.nickname like %:keyword%))")
-    Page<Post> findPosts(@Param("state") PostState state,
+    Page<Post> findByPosts(@Param("state") PostState state,
                          @Param("status") PostStatus status,
                          @Param("type") String type,
                          @Param("keyword") String keyword,
                          Pageable pageable);
+
+    // 특정 사용자 게시글 조회
+    @Query("select p from Post p " +
+            "where p.author.id=:userId" +
+            "and p.state=:state " +
+            "and p.status=:status")
+    Page<Post> findByUserPosts(@Param("userId") Long userId,
+                               @Param("state") PostState state,
+                               @Param("status") PostStatus status,
+                               Pageable pageable);
 
     // 공개/비공개된 단독 유저 목록
     Page<Post> findByStatusAndAuthor_UsernameAndState(PostStatus status, String username, PostState state, Pageable pageable);

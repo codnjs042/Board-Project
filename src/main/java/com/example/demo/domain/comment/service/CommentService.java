@@ -7,13 +7,14 @@ import com.example.demo.domain.comment.dto.CommentResponseDto;
 import com.example.demo.domain.comment.repository.CommentRepository;
 import com.example.demo.domain.notice.service.NoticeService;
 import com.example.demo.domain.post.domain.Post;
-import com.example.demo.domain.post.domain.PostType;
 import com.example.demo.domain.post.repository.PostRepository;
 import com.example.demo.domain.user.domain.User;
 import com.example.demo.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,41 +26,45 @@ public class CommentService {
     public final NoticeService noticeService;
 
     @Transactional
-    public void create(Long parentId, Long postId, CommentRequestDto dto, String username){
-        User author = userRepository.findByUsername(username)
-                .orElseThrow(()-> new IllegalArgumentException("로그인 사용자를 찾을 수 없습니다"));
-
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
-
-        if (post.getType()== PostType.NOTICE){
-            throw new IllegalArgumentException("공지글에는 댓글을 작성할 수 없습니다");
-        }
-
+    public Comment save(User user, Post post, CommentRequestDto dto){
         Comment comment = Comment.builder()
                 .comment(dto.getComment())
-                .author(author)
-                .authorName(author.getNickname())
+                .author(user)
+                .authorName(user.getNickname())
                 .post(post)
                 .build();
+
         commentRepository.save(comment);
 
         post.updateCommentCount(1L);
+        return comment;
+    }
 
-        if(parentId!=null){
-            Comment parent = commentRepository.findById(parentId)
-                    .orElseThrow(() -> new IllegalArgumentException("부모 댓글을 찾을 수 없습니다"));
-            comment.updateParent(parent);
-            parent.updateChild(comment);
-            noticeService.send(author, parent.getAuthor(), post);
-        }
-        noticeService.send(author, post.getAuthor(), post);
+    @Transactional
+    public Comment connect(Long parentId, Long commentId){
+        Comment parent = commentRepository.findById(parentId)
+                .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다"));
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다"));
+
+        comment.updateParent(parent);
+        parent.updateChild(comment);
+
+        return parent;
     }
 
     public CommentResponseDto findById(Long id){
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다"));
         return new CommentResponseDto(comment);
+    }
+
+    public List<CommentResponseDto> getRootComments(Long postId){
+        return commentRepository.findAllByPost_IdAndStatusAndParentIsNull(postId, CommentStatus.ACTIVE)
+                .stream()
+                .map(CommentResponseDto::from)
+                .toList();
     }
 
     @Transactional

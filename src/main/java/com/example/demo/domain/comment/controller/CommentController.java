@@ -2,27 +2,31 @@ package com.example.demo.domain.comment.controller;
 
 import com.example.demo.domain.comment.dto.CommentRequestDto;
 import com.example.demo.domain.comment.dto.CommentResponseDto;
+import com.example.demo.domain.comment.service.CommentFacade;
 import com.example.demo.domain.comment.service.CommentService;
+import com.example.demo.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import java.security.Principal;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/post/{postId}")
 public class CommentController {
     private final CommentService commentService;
+    private final CommentFacade commentFacade;
 
     @PostMapping("/comment")
     public String write(
+            @PathVariable Long postId,
             @RequestParam(required = false) Long parentId,
             @RequestParam(required = false) Long editId,
-            @PathVariable Long postId,
-            @ModelAttribute CommentRequestDto dto, Principal principal) {
+            @ModelAttribute CommentRequestDto dto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         if(editId==null)
-            commentService.create(parentId, postId, dto, principal.getName());
+            commentFacade.create(parentId, postId, dto, userDetails.getId());
         else
             return modify(postId, editId, dto);
         return "redirect:/post/" + postId;

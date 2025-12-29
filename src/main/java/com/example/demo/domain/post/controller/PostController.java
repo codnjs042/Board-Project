@@ -3,6 +3,7 @@ package com.example.demo.domain.post.controller;
 import com.example.demo.domain.post.dto.PostDetailDto;
 import com.example.demo.domain.post.dto.PostRequestDto;
 import com.example.demo.domain.post.dto.PostResponseDto;
+import com.example.demo.domain.post.service.PostFacade;
 import com.example.demo.domain.post.service.PostService;
 import com.example.demo.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/post")
 public class PostController {
     public final PostService postService;
+    public final PostFacade postFacade;
 
     @GetMapping
     public String list(@RequestParam(defaultValue="0") int page,
@@ -38,7 +40,7 @@ public class PostController {
     @PostMapping("/write")
     public String write(@ModelAttribute PostRequestDto dto,
                         @AuthenticationPrincipal CustomUserDetails userDetails){
-        postService.create(dto, userDetails.getId());
+        postFacade.create(dto, userDetails.getId());
         return "redirect:/post";
     }
 
@@ -46,7 +48,7 @@ public class PostController {
     public String detail(@PathVariable Long postId,
                          @AuthenticationPrincipal CustomUserDetails userDetails,
                          Model model){
-        PostDetailDto postDetail = postService.getPostDetail(postId, userDetails);
+        PostDetailDto postDetail = postFacade.getPostDetail(postId, userDetails);
         model.addAttribute("postDetail", postDetail);
         return "post/detail";
     }
@@ -55,7 +57,7 @@ public class PostController {
     public String editForm(@PathVariable Long postId,
                            @AuthenticationPrincipal CustomUserDetails userDetails,
                            Model model){
-        PostResponseDto post = postService.getPostForEdit(postId, userDetails.getId());
+        PostResponseDto post = postFacade.getPostForEdit(postId, userDetails.getId());
         model.addAttribute("post", post);
         return "post/edit";
     }
@@ -64,14 +66,14 @@ public class PostController {
     public String edit(@PathVariable Long postId,
                        @ModelAttribute PostRequestDto dto,
                        @AuthenticationPrincipal CustomUserDetails userDetails){
-        postService.modify(postId, dto, userDetails.getId());
+        postFacade.modify(postId, dto, userDetails.getId());
         return "redirect:/post/{postId}";
     }
 
     @PostMapping("/{postId}/delete")
     public String delete(@PathVariable Long postId,
                          @AuthenticationPrincipal CustomUserDetails userDetails) {
-        postService.delete(postId, userDetails.getId());
+        postFacade.delete(postId, userDetails.getId());
         return "redirect:/post";
     }
 }

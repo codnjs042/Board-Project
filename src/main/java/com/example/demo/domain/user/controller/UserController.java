@@ -1,5 +1,7 @@
 package com.example.demo.domain.user.controller;
 
+import com.example.demo.domain.post.domain.PostStatus;
+import com.example.demo.domain.post.service.PostQueryService;
 import com.example.demo.domain.user.dto.*;
 import com.example.demo.global.infra.kakao.component.KakaoComponent;
 import com.example.demo.domain.post.domain.PostState;
@@ -20,7 +22,7 @@ import java.util.List;
 @Controller
 public class UserController {
     private final UserService userService;
-    private final PostService postService;
+    private final PostQueryService postQueryService;
     private final KakaoComponent kakaoComponent;
 
     @GetMapping
@@ -58,18 +60,11 @@ public class UserController {
     }
 
     @GetMapping("/user/myHistory")
-    public String myHistory(
-            @RequestParam(defaultValue="0") int page,
-            @RequestParam(required=false) String keyword,
-            @RequestParam(required=false) String type,
-            Principal principal,
-            Model model){
-        Page<PostResponseDto> PostPage
-                = (keyword!=null && !keyword.isBlank())
-                ? userService.searchMyPost(principal.getName(), PostState.PUBLISHED, keyword, type, page)
-                : userService.findAllMyPost(principal.getName(), PostState.PUBLISHED, page);
+    public String myHistory(@RequestParam(defaultValue="0") int page,
+                            @AuthenticationPrincipal CustomUserDetails userDetails,
+                            Model model){
+        Page<PostResponseDto> PostPage = postQueryService.getUserPosts(userDetails.getId(), PostState.PUBLISHED, page);
         model.addAttribute("postPage", PostPage);
-        model.addAttribute("keyword", keyword);
         return "user/myHistory";
     }
 
@@ -100,9 +95,10 @@ public class UserController {
     }
 
     @GetMapping("/user/draft")
-    public String draft(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public String draft(@RequestParam(defaultValue="0") int page,
+                        @AuthenticationPrincipal CustomUserDetails userDetails,
                         Model model){
-        List<PostResponseDto> draft = postService.findDraft(userDetails, PostState.DRAFT);
+        Page<PostResponseDto> draft = postQueryService.getUserPosts(userDetails.getId(), PostState.DRAFT, page);
         model.addAttribute("draft", draft);
         return "user/draft";
     }
