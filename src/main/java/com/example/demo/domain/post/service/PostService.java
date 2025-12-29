@@ -53,9 +53,11 @@ public class PostService {
         postRepository.save(post);
     }
 
+
+
     public Page<PostResponseDto> getPosts(int page, String type, String keyword){
         Pageable pageable = PageRequest.of(page, pageSize,
-                Sort.by(Sort.Order.desc("type"), Sort.Order.desc("createdAt")));
+                Sort.by(Sort.Order.desc("type"), Sort.Order.desc("publishedAt")));
 
         return postRepository.findPosts(PostState.PUBLISHED, PostStatus.ACTIVE, type, keyword, pageable)
                 .map(PostResponseDto::from);
@@ -125,7 +127,7 @@ public class PostService {
     }
 
     public Page<PostResponseDto> findAllMyPost(String username, PostState state, int page){
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("publishedAt").descending());
         if(state!=PostState.PUBLISHED){
             throw new IllegalStateException("정상 업로드된 게시글만 열람 가능합니다");
         }
@@ -140,7 +142,7 @@ public class PostService {
     }
 
     public Page<PostResponseDto> searchMyPost(String username, PostState state, String keyword, String type, int page){
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("publishedAt").descending());
 
         if(state!=PostState.PUBLISHED){
             throw new IllegalStateException("정상 업로드된 게시글만 열람 가능합니다");

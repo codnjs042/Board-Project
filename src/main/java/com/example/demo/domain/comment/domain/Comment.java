@@ -2,17 +2,16 @@ package com.example.demo.domain.comment.domain;
 
 import com.example.demo.domain.post.domain.Post;
 import com.example.demo.domain.user.domain.User;
+import com.example.demo.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name="comments")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Comment {
+public class Comment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,13 +37,8 @@ public class Comment {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> child;
 
-    @CreationTimestamp
-    private LocalDateTime CreatedAt;
-
-    private LocalDateTime UpdatedAt;
-
     @Enumerated(EnumType.STRING)
-    private CommentStatus status = CommentStatus.ACTIVE;
+    private CommentStatus status;
 
     @Builder
     public Comment(String comment, User author, String authorName, Post post, CommentStatus status){
@@ -57,7 +51,6 @@ public class Comment {
 
     public void modify(String comment){
         this.comment=comment;
-        this.UpdatedAt=LocalDateTime.now();
     }
 
     public void updateParent(Comment parent){

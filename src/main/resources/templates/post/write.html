@@ -22,12 +22,6 @@
                 <input type="text" name="title" maxlength="30" th:value="${post != null ? post.title : ''}" required>
             </label>
             <br><br>
-            <div>
-<!--                <form th:action="@{/media}" method="post">-->
-<!--                    <input type="file" accept="image/*" multiple>-->
-<!--                    <input type="file" accept="video/*" multiple>-->
-<!--                </form>-->
-            </div>
             <label>내용:<br>
                 <textarea name="content" rows="10" cols="50" th:text="${post != null ? post.content : ''}" required></textarea>
             </label>

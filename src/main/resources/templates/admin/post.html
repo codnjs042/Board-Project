@@ -36,7 +36,8 @@
                             <th>내용</th>
                             <th>아이디</th>
                             <th>닉네임</th>
-                            <th>작성일</th>
+                            <th>생성일</th>
+                            <th>발행일</th>
                             <th>수정일</th>
                             <th>공개여부</th>
                             <th>게시글유형</th>
@@ -52,7 +53,8 @@
                             <td th:text="${post.author.username}"></td>
                             <td th:text="${post.authorName}"></td>
                             <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
-                            <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                            <td th:text="${#temporals.format(post.publishedAt, 'yyyy-MM-dd HH:mm')}"></td>
+                            <td th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd HH:mm')}"></td>
                             <td th:text="${post.state.name()=='PUBLISHED'?'공개':'임시'}"></td>
                             <td th:text="${post.type.name()=='NOTICE'?'공지':'일반'}"></td>
                             <td th:text="${post.status.name()=='ACTIVE'?'활성화':'비활성화'}"></td>

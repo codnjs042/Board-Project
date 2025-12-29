@@ -18,9 +18,9 @@ public class CommentResponseDto {
     private Post post;
     private Comment parent;
     private List<Comment> child;
+    private CommentStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private CommentStatus status;
 
     public CommentResponseDto(Comment comment){
         this.id = comment.getId();
@@ -30,9 +30,9 @@ public class CommentResponseDto {
         this.post = comment.getPost();
         this.parent = comment.getParent();
         this.child = comment.getChild();
+        this.status = comment.getStatus();
         this.createdAt = comment.getCreatedAt();
         this.updatedAt = comment.getUpdatedAt();
-        this.status = comment.getStatus();
     }
 
     public static CommentResponseDto from(Comment comment){

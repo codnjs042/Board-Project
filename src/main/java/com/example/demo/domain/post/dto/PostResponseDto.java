@@ -17,10 +17,10 @@ public class PostResponseDto {
     private String authorName;
     private Long view;
     private Long likeCount;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
     private PostState state;
     private PostType type;
+    private LocalDateTime publishedAt;
+    private LocalDateTime updatedAt;
 
     public PostResponseDto(Post post){
         this.id=post.getId();
@@ -30,10 +30,10 @@ public class PostResponseDto {
         this.authorName=post.getAuthorName();
         this.view=post.getView();
         this.likeCount=post.getLikeCount();
-        this.createdAt=post.getCreatedAt();
-        this.updatedAt=post.getUpdatedAt();
         this.state=post.getState();
         this.type=post.getType();
+        this.publishedAt=post.getPublishedAt();
+        this.updatedAt=post.getUpdatedAt();
     }
 
     public static PostResponseDto from(Post post){

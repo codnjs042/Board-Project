@@ -17,7 +17,7 @@
             <p><strong>제목 : </strong><span th:text="${post.title}"></span></p>
             <p><strong>작성자 : </strong><span th:text="|${post.authorName}(${#strings.substring(post.author.username, 0, 4)}${'*'.repeat(#strings.length(post.author.username)-4)})|"></span></p>
             <p><strong>작성일 : </strong>
-                <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                <span th:text="${#temporals.format(post.publishedAt, 'yyyy-MM-dd HH:mm')}"></span>
                 <small th:if="${post.updatedAt!=null}" th:text="|${#temporals.format(post.updatedAt, 'yyyy-MM-dd HH:mm')}에 수정됨|"></small>
             </p>
             <p><strong>내용 : </strong><br>

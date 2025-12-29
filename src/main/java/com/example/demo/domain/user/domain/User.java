@@ -1,5 +1,6 @@
 package com.example.demo.domain.user.domain;
 
+import com.example.demo.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name="users")
 @Getter
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
-public class User {
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,13 +30,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 
-    @CreationTimestamp
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column
-    private LocalDateTime pendingAt;
-
     @Builder
     public User(String username, String password, String nickname, UserRole role, UserStatus status){
         this.username=username;
@@ -45,8 +39,8 @@ public class User {
         this.status=(status==null)?UserStatus.ACTIVE:status;
     }
 
-    public LocalDateTime  getDeadLine(){
-        return pendingAt.plusDays(30).with(LocalDateTime.MAX);
+    public LocalDateTime getDeadLine(){
+        return getUpdatedAt().plusDays(30).with(LocalDateTime.MAX);
     }
 
     public boolean isAdmin(){
@@ -63,6 +57,5 @@ public class User {
 
     public void updateStatus(UserStatus status) {
         this.status = status;
-        if (status == UserStatus.PENDING) this.pendingAt = LocalDateTime.now();
     }
 }

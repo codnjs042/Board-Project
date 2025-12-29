@@ -16,11 +16,12 @@ public class PostAdminResponseDto {
     private String content;
     private User author;
     private String authorName;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
     private PostState state;
     private PostType type;
     private PostStatus status;
+    private LocalDateTime createdAt;
+    private LocalDateTime publishedAt;
+    private LocalDateTime updatedAt;
 
     public PostAdminResponseDto(Post post){
         this.id=post.getId();
@@ -28,11 +29,12 @@ public class PostAdminResponseDto {
         this.content=post.getContent();
         this.author=post.getAuthor();
         this.authorName=post.getAuthorName();
-        this.createdAt=post.getCreatedAt();
-        this.updatedAt=post.getUpdatedAt();
         this.state=post.getState();
         this.type=post.getType();
         this.status=post.getStatus();
+        this.createdAt=post.getCreatedAt();
+        this.publishedAt=post.getPublishedAt();
+        this.updatedAt=post.getUpdatedAt();
     }
 
     public static PostAdminResponseDto from(Post post){

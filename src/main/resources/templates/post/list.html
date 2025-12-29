@@ -33,7 +33,7 @@
                 <a th:href="@{/post/{id}(id=${post.id})}" th:text="${post.title}"></a>
             </td>
             <td th:text="${post.authorName}"></td>
-            <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${#temporals.format(post.publishedAt, 'yyyy-MM-dd HH:mm')}"></td>
         </tr>
         </tbody>
     </table>

@@ -13,17 +13,18 @@ public class NoticeResponseDto {
     private User sendUser;
     private User receiveUser;
     private Post post;
-    private LocalDateTime createdAt;
     private NoticeState state;
     private NoticeStatus status;
+    private LocalDateTime createdAt;
+
 
     public NoticeResponseDto(Notice notice){
         this.sendUser = notice.getSendUser();
         this.receiveUser = notice.getReceiveUser();
         this.post = notice.getPost();
-        this.createdAt = notice.getCreatedAt();
         this.state = notice.getState();
         this.status = notice.getStatus();
+        this.createdAt = notice.getCreatedAt();
     }
 
     public static NoticeResponseDto from(Notice notice){ return new NoticeResponseDto(notice);}

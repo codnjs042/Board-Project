@@ -2,17 +2,15 @@ package com.example.demo.domain.notice.domain;
 
 import com.example.demo.domain.post.domain.Post;
 import com.example.demo.domain.user.domain.User;
+import com.example.demo.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Table(name="notices")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Notice {
+public class Notice extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,15 +27,11 @@ public class Notice {
     @JoinColumn(name = "postId")
     private Post post;
 
-    @CreationTimestamp
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
+    @Enumerated(EnumType.STRING)
+    private NoticeState state;
 
     @Enumerated(EnumType.STRING)
-    private NoticeState state = NoticeState.UNCHECK;
-
-    @Enumerated(EnumType.STRING)
-    private NoticeStatus status = NoticeStatus.ACTIVE;
+    private NoticeStatus status;
 
     @Builder
     public Notice(User sendUser, User receiveUser, Post post, NoticeState state, NoticeStatus status){

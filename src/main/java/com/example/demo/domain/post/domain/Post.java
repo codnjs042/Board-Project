@@ -1,16 +1,17 @@
 package com.example.demo.domain.post.domain;
 
 import com.example.demo.domain.user.domain.User;
+import com.example.demo.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name="posts")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Post{
+public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,13 +29,6 @@ public class Post{
 
     @Column(nullable = false)
     private String authorName;
-
-    @CreationTimestamp
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column
-    private LocalDateTime updatedAt;
 
     @Column(nullable = false)
     private Long view;
@@ -54,6 +48,9 @@ public class Post{
     @Enumerated(EnumType.STRING)
     private PostStatus status;
 
+    @Column
+    private LocalDateTime publishedAt;
+
     @Builder
     public Post(String title, String content, User author, String authorName, PostType type, PostState state, PostStatus status){
         this.title=title;
@@ -72,8 +69,11 @@ public class Post{
         this.title=title;
         this.content=content;
         this.type=type;
-        if(state == PostState.PUBLISHED)
-            updatedAt = LocalDateTime.now();
+    }
+
+    public void upload(){
+        this.state=PostState.PUBLISHED;
+        this.publishedAt=LocalDateTime.now();
     }
 
     public void updateLikeCount(Long amount){
