@@ -26,7 +26,7 @@ public class CommentController {
             @ModelAttribute CommentRequestDto dto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         if(editId==null)
-            commentFacade.create(parentId, postId, dto, userDetails.getId());
+            commentFacade.create(parentId, postId, dto, userDetails.getUser());
         else
             return modify(postId, editId, dto);
         return "redirect:/post/" + postId;

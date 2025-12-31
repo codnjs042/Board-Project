@@ -1,7 +1,6 @@
 package com.example.demo.domain.like.controller;
 
 import com.example.demo.domain.like.service.LikeFacade;
-import com.example.demo.domain.like.service.LikeService;
 import com.example.demo.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,7 +16,7 @@ public class LikeController {
     @PostMapping("/post/{postId}")
     public String postLike(@PathVariable("postId") Long postId,
                            @AuthenticationPrincipal CustomUserDetails userDetails){
-        likeFacade.toggleLike(postId, userDetails.getId());
+        likeFacade.likeToggle(postId, userDetails.getUser());
         return "redirect:/post/{postId}";
     }
 }

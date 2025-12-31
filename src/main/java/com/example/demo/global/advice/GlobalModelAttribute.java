@@ -15,7 +15,7 @@ public class GlobalModelAttribute {
     @ModelAttribute("user")
     public UserResponseDto addUserToModel(@AuthenticationPrincipal CustomUserDetails userDetails){
         if(userDetails!=null){
-            return userService.userInfo(userDetails);
+            return UserResponseDto.from(userDetails.getUser());
         }
         return null;
     }

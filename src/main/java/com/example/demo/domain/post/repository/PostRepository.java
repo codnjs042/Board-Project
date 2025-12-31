@@ -19,7 +19,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                 "(:type='title' and p.title like %:keyword%) or" +
                 "(:type='content' and p.content like %:keyword%) or " +
                 "(:type='author' and p.author.nickname like %:keyword%))")
-    Page<Post> findByPosts(@Param("state") PostState state,
+    Page<Post> searchPosts(@Param("state") PostState state,
                            @Param("status") PostStatus status,
                            @Param("type") String type,
                            @Param("keyword") String keyword,
@@ -30,7 +30,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "where p.author.id=:userId " +
             "and p.state=:state " +
             "and p.status=:status")
-    Page<Post> findByUserPosts(@Param("userId") Long userId,
+    Page<Post> findAllByUserId(@Param("userId") Long userId,
                                @Param("state") PostState state,
                                @Param("status") PostStatus status,
                                Pageable pageable);
@@ -43,7 +43,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                 "(:type='title' and p.title like %:keyword%) or" +
                 "(:type='content' and p.content like %:keyword%) or " +
                 "(:type='author' and p.author.nickname like %:keyword%))")
-    Page<Post> findByAdminPosts(@Param("state") PostState state,
+    Page<Post> searchPostsForAdmin(@Param("state") PostState state,
                                 @Param("status") PostStatus status,
                                 @Param("type") String type,
                                 @Param("keyword") String keyword,

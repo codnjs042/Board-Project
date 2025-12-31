@@ -25,8 +25,7 @@ public class PostController {
                        @RequestParam(required=false) String type,
                        @RequestParam(required=false) String keyword,
                        Model model){
-        Page<PostResponseDto> postPage
-                = postService.getPosts(page, type, keyword);
+        Page<PostResponseDto> postPage = postService.searchPosts(page, type, keyword);
         model.addAttribute("postPage", postPage);
         model.addAttribute("keyword", keyword);
         return "post/list";
@@ -40,7 +39,7 @@ public class PostController {
     @PostMapping("/write")
     public String write(@ModelAttribute PostRequestDto dto,
                         @AuthenticationPrincipal CustomUserDetails userDetails){
-        postFacade.create(dto, userDetails.getId());
+        postService.create(dto, userDetails.getUser());
         return "redirect:/post";
     }
 
@@ -57,7 +56,7 @@ public class PostController {
     public String editForm(@PathVariable Long postId,
                            @AuthenticationPrincipal CustomUserDetails userDetails,
                            Model model){
-        PostResponseDto post = postFacade.getPostForEdit(postId, userDetails.getId());
+        PostResponseDto post = postService.getPostForEdit(postId, userDetails.getUser());
         model.addAttribute("post", post);
         return "post/edit";
     }
@@ -66,14 +65,14 @@ public class PostController {
     public String edit(@PathVariable Long postId,
                        @ModelAttribute PostRequestDto dto,
                        @AuthenticationPrincipal CustomUserDetails userDetails){
-        postFacade.modify(postId, dto, userDetails.getId());
+        postService.modify(postId, dto, userDetails.getUser());
         return "redirect:/post/{postId}";
     }
 
     @PostMapping("/{postId}/delete")
     public String delete(@PathVariable Long postId,
                          @AuthenticationPrincipal CustomUserDetails userDetails) {
-        postFacade.delete(postId, userDetails.getId());
+        postService.delete(postId, userDetails.getUser());
         return "redirect:/post";
     }
 }

@@ -23,8 +23,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "and (:keyword is null or " +
                 "(u.username like %:keyword%) or " +
                 "(u.nickname like %:keyword%))")
-    Page<User> findByAdminUsers(@Param("role") UserRole role,
-                                @Param("status") UserStatus status,
-                                @Param("keyword") String keyword,
-                                Pageable pageable);
+    Page<User> searchUsersForAdmin(@Param("role") UserRole role,
+                                   @Param("status") UserStatus status,
+                                   @Param("keyword") String keyword,
+                                   Pageable pageable);
 }

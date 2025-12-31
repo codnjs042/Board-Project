@@ -5,15 +5,11 @@ import com.example.demo.domain.comment.domain.CommentStatus;
 import com.example.demo.domain.comment.dto.CommentRequestDto;
 import com.example.demo.domain.comment.dto.CommentResponseDto;
 import com.example.demo.domain.comment.repository.CommentRepository;
-import com.example.demo.domain.notice.service.NoticeService;
 import com.example.demo.domain.post.domain.Post;
-import com.example.demo.domain.post.repository.PostRepository;
 import com.example.demo.domain.user.domain.User;
-import com.example.demo.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 @Service
@@ -21,9 +17,6 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class CommentService {
     public final CommentRepository commentRepository;
-    public final UserRepository userRepository;
-    public final PostRepository postRepository;
-    public final NoticeService noticeService;
 
     @Transactional
     public Comment save(User user, Post post, CommentRequestDto dto){
@@ -54,8 +47,8 @@ public class CommentService {
         return parent;
     }
 
-    public CommentResponseDto findById(Long id){
-        Comment comment = commentRepository.findById(id)
+    public CommentResponseDto findById(Long commentId){
+        Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다"));
         return new CommentResponseDto(comment);
     }

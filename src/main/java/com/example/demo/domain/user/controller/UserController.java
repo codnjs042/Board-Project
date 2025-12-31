@@ -1,6 +1,5 @@
 package com.example.demo.domain.user.controller;
 
-import com.example.demo.domain.post.service.PostService;
 import com.example.demo.domain.user.dto.*;
 import com.example.demo.domain.user.service.UserFacade;
 import com.example.demo.global.infra.kakao.component.KakaoComponent;
@@ -52,7 +51,7 @@ public class UserController {
     @PostMapping("/user/myPage")
     public String updateNickname(@RequestParam String nickname,
                                  @AuthenticationPrincipal CustomUserDetails userDetails){
-        userService.updateNickname(nickname, userDetails);
+        userFacade.updateNickname(nickname, userDetails.getId());
         return "redirect:/user/myPage";
     }
 
@@ -80,14 +79,14 @@ public class UserController {
     @GetMapping("/user/delete")
     public String delete(@AuthenticationPrincipal CustomUserDetails userDetails,
                          Model model){
-        UserStatusResponseDto userStatus = userService.userStatus(userDetails);
+        UserStatusResponseDto userStatus = UserStatusResponseDto.from(userDetails.getUser());
         model.addAttribute("userStatus", userStatus);
         return "user/delete";
     }
 
     @PostMapping("/user/delete")
     public String delete(@AuthenticationPrincipal CustomUserDetails userDetails){
-        userService.deleteToggle(userDetails);
+        userService.deleteToggle(userDetails.getId());
         return "redirect:/user/delete";
     }
 

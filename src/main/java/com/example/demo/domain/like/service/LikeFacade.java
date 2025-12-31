@@ -5,7 +5,6 @@ import com.example.demo.domain.post.domain.PostStatus;
 import com.example.demo.domain.post.service.PostService;
 import com.example.demo.domain.user.domain.User;
 import com.example.demo.domain.user.domain.UserStatus;
-import com.example.demo.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,15 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class LikeFacade {
-    private final UserService userService;
     private final PostService postService;
     private final LikeService likeService;
 
     @Transactional
-    public void toggleLike(Long postId, Long userId){
-        User user = userService.getUserId(userId);
-
-        Post post = postService.getPostId(postId);
+    public void likeToggle(Long postId, User user){
+        Post post = postService.findById(postId);
 
         if(user.getStatus() == UserStatus.DISABLED)
             throw new IllegalArgumentException("탈퇴한 회원은 서비스를 이용할 수 없습니다.");

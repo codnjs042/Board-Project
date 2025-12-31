@@ -25,7 +25,7 @@ public class AdminController {
     public String userList(@RequestParam(defaultValue="0") int page,
                            @RequestParam(required=false) String keyword,
                            Model model){
-        Page<UserAdminResponseDto> userPage = adminFacade.getAdminUsers(null, null, keyword, page);
+        Page<UserAdminResponseDto> userPage = adminFacade.getUsers(null, null, keyword, page);
         model.addAttribute("userPage", userPage);
         model.addAttribute("keyword", keyword);
         return "admin/user";
@@ -34,7 +34,7 @@ public class AdminController {
     @PostMapping("user/delete")
     public String userDelete(@ModelAttribute UserAdminRequestDto dto,
                              @AuthenticationPrincipal CustomUserDetails userDetails){
-        adminFacade.deleteUsers(dto, userDetails.getId());
+        adminFacade.deleteUsers(dto, userDetails.getUser());
         return "redirect:/admin";
     }
 
@@ -43,7 +43,7 @@ public class AdminController {
                            @RequestParam(required=false) String keyword,
                            @RequestParam(required=false) String type,
                            Model model){
-        Page<PostAdminResponseDto> postPage = adminFacade.getAdminPosts(null, null, page, type, keyword);
+        Page<PostAdminResponseDto> postPage = adminFacade.getPosts(null, null, page, type, keyword);
         model.addAttribute("postPage", postPage);
         model.addAttribute("keyword", keyword);
         return "admin/post";
@@ -52,7 +52,7 @@ public class AdminController {
     @PostMapping("post/delete")
     public String postDelete(@ModelAttribute PostAdminRequestDto dto,
                              @AuthenticationPrincipal CustomUserDetails userDetails){
-        adminFacade.deletePosts(dto, userDetails.getId());
+        adminFacade.deletePosts(dto, userDetails.getUser());
         return "redirect:/admin/post";
     }
 }
