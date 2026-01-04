@@ -9,17 +9,33 @@
     <header th:replace="~{layout/header :: header}"></header>
     <main>
         <h3>임시 저장 목록</h3>
-        <section>
-            <ol th:each="post, iterStat : ${draft}">
-                <li>
-                    <span th:text="${iterStat.count}"></span>
+
+        <p>total : <span th:text="${draftPage.totalElements}"></span></p>
+        <table class="post-list">
+            <tbody>
+            <tr th:each="post, iterStat : ${draftPage.content}">
+                <td>
                     <a th:href="@{/post/write(id=${post.id})}" th:text="${post.title}"></a>
-                    <small>
-                        (마지막 수정일 : <span th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd HH:mm')}"></span>)
-                    </small>
-                </li>
-            </ol>
-        </section>
+                </td>
+                <td th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd HH:mm')}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="pagination">
+        <span th:if="${draftPage.hasPrevious()}">
+            <a th:href="@{/user/draft(page=${draftPage.number-1})}">이전</a>
+        </span>
+            <span th:if="${draftPage.totalPages}>0"
+                  th:each="i : ${#numbers.sequence(0, draftPage.totalPages-1)}">
+            <a th:href="@{/user/draft(page=${i}, keyword=${keyword})}"
+               th:text="${i+1}"
+               th:classappend="${i==draftPage.number ? 'active' : ''}">
+            </a>
+        </span>
+            <span th:if="${draftPage.hasNext()}">
+            <a th:href="@{/user/draft(page=${draftPage.number+1})}">다음</a>
+        </span>
+        </div>
         <a th:href="@{/post/write}">뒤로가기</a>
         <a th:href="@{/post}">목록</a>
     </main>

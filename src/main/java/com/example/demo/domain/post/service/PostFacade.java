@@ -5,7 +5,7 @@ import com.example.demo.domain.comment.service.CommentService;
 import com.example.demo.domain.like.service.LikeService;
 import com.example.demo.domain.post.domain.Post;
 import com.example.demo.domain.post.domain.PostStatus;
-import com.example.demo.domain.post.dto.PostDetailDto;
+import com.example.demo.domain.post.dto.PostDetailResponseDto;
 import com.example.demo.domain.post.dto.PostResponseDto;
 import com.example.demo.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -21,16 +21,16 @@ public class PostFacade {
     private final CommentService commentService;
     private final LikeService likeService;
 
-    public PostDetailDto getPostDetail(Long postId, CustomUserDetails userDetails){
+    public PostDetailResponseDto getPostDetail(Long postId, CustomUserDetails userDetails){
         Post post = postService.findById(postId);
 
-        if(post.getStatus().equals(PostStatus.DISABLED))
-            throw new IllegalArgumentException("현재 삭제된 게시글입니다.");
+        if(!post.isPublished() || !post.isActive())
+            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
 
         List<CommentResponseDto> comment = commentService.getRootComments(post.getId());
 
         Boolean isLiked = (userDetails!=null) && likeService.isLiked(userDetails.getId(), post.getId());
 
-        return new PostDetailDto(PostResponseDto.from(post), isLiked, comment);
+        return new PostDetailResponseDto(PostResponseDto.from(post), isLiked, comment);
     }
 }

@@ -9,21 +9,20 @@
     <header th:replace="~{layout/header :: header}"></header>
     <main id="postInputSection">
         <h3>글 작성</h3>
-        <a th:href="@{/}">Main</a>
-        <a th:href="@{/user/draft}"><button>임시 저장 - 불러오기</button></a>
+        <button><a th:href="@{/user/draft}">임시 저장 목록</a></button>
         <form th:action="@{/post/write}" method="post">
-            <input type="hidden" name="id" th:value="${post != null ? post.id : ''}">
-            <div th:if="${user.role.name()=='ADMIN'}">
-                <label>일반<input type="radio" name="type" value="NORMAL" th:checked="${post!= null ? post.type.name() == 'NORMAL' : false}"></label>
-                <label>공지<input type="radio" name="type" value="NOTICE" th:checked="${post!= null ? post.type.name() == 'NOTICE' : true}"></label>
+            <input type="hidden" name="id" th:value="${post?.id}">
+            <div th:if="${user.isAdmin}">
+                <label>일반<input type="radio" name="type" value="NORMAL" th:checked="${post?.type?.name=='NORMAL'}"></label>
+                <label>공지<input type="radio" name="type" value="NOTICE" th:checked="${post==null || post?.type?.name=='NOTICE'}"></label>
             </div>
-            <input th:unless="${user.role.name()=='ADMIN'}" type="hidden" name="type" value="NORMAL">
+            <input th:unless="${user.isAdmin}" type="hidden" name="type" value="NORMAL">
             <label>제목:
-                <input type="text" name="title" maxlength="30" th:value="${post != null ? post.title : ''}" required>
+                <input type="text" name="title" maxlength="30" th:value="${post?.title}" required>
             </label>
             <br><br>
             <label>내용:<br>
-                <textarea name="content" rows="10" cols="50" th:text="${post != null ? post.content : ''}" required></textarea>
+                <textarea name="content" rows="10" cols="50" th:text="${post?.content}" required></textarea>
             </label>
             <br><br>
             <button type="submit" name="state" value="DRAFT">임시저장</button>

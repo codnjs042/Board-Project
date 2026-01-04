@@ -16,11 +16,11 @@ public class Post extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 30)
+    @Column(length = 30)
     private String title;
 
     @Lob
-    @Column(nullable = false)
+    @Column
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -76,6 +76,17 @@ public class Post extends BaseEntity {
         this.publishedAt=LocalDateTime.now();
     }
 
+    public boolean isAuthor(Long userId){
+        return this.author.getId().equals(userId);
+    }
+
+    public boolean isPublished(){
+        return state == PostState.PUBLISHED;
+    }
+
+    public boolean isActive(){
+        return status == PostStatus.ACTIVE;
+    }
     public void updateLikeCount(Long amount){
         likeCount+=1;
     }

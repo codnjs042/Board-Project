@@ -54,13 +54,13 @@ public class UserService {
             throw new IllegalArgumentException("소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다.");
         }
 
-        if(user.mismatchRawPw(passwordEncoder, dto.getRawPw())){
+        if(!user.matchRawPw(passwordEncoder, dto.getRawPw())){
             throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
         }
         if(dto.matchNewPw()){
             throw new IllegalArgumentException("현재 비밀번호와 같은 비밀번호로 변경할 수 없습니다.");
         }
-        if(dto.mismatchConfirmPw()){
+        if(!dto.matchConfirmPw()){
             throw new IllegalArgumentException("변경 비밀번호가 일치하지 않습니다.");
         }
 

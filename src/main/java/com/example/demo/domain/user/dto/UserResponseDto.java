@@ -12,6 +12,7 @@ public class UserResponseDto {
     private String username;
     private String nickname;
     private UserRole role;
+    private Boolean isAdmin;
 
     public static UserResponseDto from(User user){
         return UserResponseDto.builder()
@@ -19,6 +20,7 @@ public class UserResponseDto {
                 .username(user.getUsername())
                 .nickname(user.getNickname())
                 .role(user.getRole())
+                .isAdmin(user.isAdmin())
                 .build();
     }
 }

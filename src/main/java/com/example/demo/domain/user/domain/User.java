@@ -56,7 +56,7 @@ public class User extends BaseEntity {
     }
 
     //matches(문자열, 암호화된 문자열)
-    public boolean mismatchRawPw(PasswordEncoder encoder, String rawPassword){
+    public boolean matchRawPw(PasswordEncoder encoder, String rawPassword){
         return encoder.matches(rawPassword, this.password);
     }
 

@@ -14,7 +14,7 @@
         <nav>
             <div sec:authorize="isAuthenticated()">
                 <small>반갑습니다, <span th:text="${user?.nickname}"></span>님!</small>
-                <a th:if="${user?.role?.name=='ADMIN'}" th:href="@{/admin}">관리자페이지</a>
+                <a th:if="${user?.isAdmin}" th:href="@{/admin}">관리자페이지</a>
                 <a th:href="@{/user/myPage}">마이페이지</a>
                 <form th:action="@{/logout}" method="post">
                     <a th:href="@{/logout}">로그아웃</a>

@@ -56,15 +56,6 @@ public class UserController {
         return "redirect:/user/myPage";
     }
 
-    @GetMapping("/user/myHistory")
-    public String myHistory(@RequestParam(defaultValue="0") int page,
-                            @AuthenticationPrincipal CustomUserDetails userDetails,
-                            Model model){
-        Page<PostResponseDto> PostPage = userFacade.getUserPosts(userDetails.getId(), PostState.PUBLISHED, page);
-        model.addAttribute("postPage", PostPage);
-        return "user/myHistory";
-    }
-
     @GetMapping("/user/pwPage")
     public String pwPage(){
         return "user/pwPage";
@@ -95,8 +86,8 @@ public class UserController {
     public String draft(@RequestParam(defaultValue="0") int page,
                         @AuthenticationPrincipal CustomUserDetails userDetails,
                         Model model){
-        Page<PostResponseDto> draft = userFacade.getUserPosts(userDetails.getId(), PostState.DRAFT, page);
-        model.addAttribute("draft", draft);
+        Page<PostResponseDto> draftPage = userFacade.getUserPosts(userDetails.getId(), PostState.DRAFT, page);
+        model.addAttribute("draftPage", draftPage);
         return "user/draft";
     }
 }

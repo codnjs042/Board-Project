@@ -6,7 +6,6 @@ import com.example.demo.domain.post.domain.PostType;
 import com.example.demo.domain.user.domain.User;
 import lombok.Getter;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 public class PostResponseDto {

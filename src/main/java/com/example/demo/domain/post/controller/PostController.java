@@ -1,11 +1,12 @@
 package com.example.demo.domain.post.controller;
 
-import com.example.demo.domain.post.dto.PostDetailDto;
+import com.example.demo.domain.post.dto.PostDetailResponseDto;
 import com.example.demo.domain.post.dto.PostRequestDto;
 import com.example.demo.domain.post.dto.PostResponseDto;
 import com.example.demo.domain.post.service.PostFacade;
 import com.example.demo.domain.post.service.PostService;
 import com.example.demo.global.security.CustomUserDetails;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,14 +33,19 @@ public class PostController {
     }
 
     @GetMapping("/write")
-    public String writeForm(){
-        return "post/write";
+    public String writeForm(@RequestParam(value="id", required = false) Long postId,
+                            Model model){
+        if(postId!=null) {
+            PostResponseDto post = PostResponseDto.from(postService.findById(postId));
+            model.addAttribute("post", post);
+        }return "post/write";
     }
 
     @PostMapping("/write")
-    public String write(@ModelAttribute PostRequestDto dto,
+    public String write(@RequestParam(value="id", required = false) Long postId,
+                        @Valid @ModelAttribute PostRequestDto dto,
                         @AuthenticationPrincipal CustomUserDetails userDetails){
-        postService.create(dto, userDetails.getUser());
+        postService.create(postId, dto, userDetails.getUser());
         return "redirect:/post";
     }
 
@@ -47,7 +53,7 @@ public class PostController {
     public String detail(@PathVariable Long postId,
                          @AuthenticationPrincipal CustomUserDetails userDetails,
                          Model model){
-        PostDetailDto postDetail = postFacade.getPostDetail(postId, userDetails);
+        PostDetailResponseDto postDetail = postFacade.getPostDetail(postId, userDetails);
         model.addAttribute("postDetail", postDetail);
         return "post/detail";
     }
@@ -63,7 +69,7 @@ public class PostController {
 
     @PostMapping("/{postId}/edit")
     public String edit(@PathVariable Long postId,
-                       @ModelAttribute PostRequestDto dto,
+                       @Valid @ModelAttribute PostRequestDto dto,
                        @AuthenticationPrincipal CustomUserDetails userDetails){
         postService.modify(postId, dto, userDetails.getUser());
         return "redirect:/post/{postId}";

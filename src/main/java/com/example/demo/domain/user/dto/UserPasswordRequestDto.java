@@ -25,8 +25,8 @@ public class UserPasswordRequestDto {
         return newPw.equals(rawPw);
     }
 
-    public boolean mismatchConfirmPw(){
-        return !confirmPw.equals(newPw);
+    public boolean matchConfirmPw(){
+        return confirmPw.equals(newPw);
     }
 
 }

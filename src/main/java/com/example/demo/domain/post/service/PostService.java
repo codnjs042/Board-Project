@@ -26,17 +26,26 @@ public class PostService {
     private static final int pageSize = 10;
 
     @Transactional
-    public void create(PostRequestDto dto, User user){
-        Post post = Post.builder()
-                .title(dto.getTitle())
-                .content(dto.getContent())
-                .author(user)
-                .authorName(user.getNickname())
-                .type(dto.getType())
-                .state(dto.getState())
-                .build();
+    public void create(Long postId, PostRequestDto dto, User user){
+        Post post;
+        if(postId==null) {
+            post = Post.builder()
+                    .title(dto.getTitle())
+                    .content(dto.getContent())
+                    .author(user)
+                    .authorName(user.getNickname())
+                    .type(dto.getType())
+                    .state(dto.getState())
+                    .build();
 
-        postRepository.save(post);
+            postRepository.save(post);
+
+        }else {
+            post = findById(postId);
+            post.modify(dto.getTitle(), dto.getContent(), dto.getType());
+        }
+        if(dto.getState()==PostState.PUBLISHED)
+            post.upload();
     }
 
     public Post findById(Long postId){
@@ -59,7 +68,7 @@ public class PostService {
     public PostResponseDto getPostForEdit(Long postId, User user){
         Post post = findById(postId);
 
-        if(!post.getAuthor().getId().equals(user.getId()))
+        if(!post.isAuthor(user.getId()))
             throw new IllegalArgumentException("해당 게시글의 수정 권한이 없습니다.");
 
         return PostResponseDto.from(post);
@@ -69,7 +78,7 @@ public class PostService {
     public void modify(Long postId, PostRequestDto dto, User user){
         Post post = findById(postId);
 
-        if(!post.getAuthor().getId().equals(user.getId()))
+        if(!post.isAuthor(user.getId()))
             throw new IllegalArgumentException("해당 게시글의 수정 권한이 없습니다.");
 
         if (!user.isAdmin() && dto.getType().equals(PostType.NOTICE))
@@ -82,14 +91,14 @@ public class PostService {
     public void delete(Long postId, User user){
         Post post = findById(postId);
 
-        if(post.getAuthor().getId().equals(user.getId()))
+        if(!post.isAuthor(user.getId()))
             throw new IllegalArgumentException("해당 게시글의 삭제 권한이 없습니다.");
 
         post.updateStatus(PostStatus.DISABLED);
     }
 
     public Page<PostResponseDto> getUserPosts(Long userId, PostState state, int page){
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("publishedAt").descending());
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(state==PostState.PUBLISHED ? "publishedAt" : "updatedAt").descending());
         return postRepository.findAllByUserId(userId, state, PostStatus.ACTIVE, pageable)
                 .map(PostResponseDto::from);
     }

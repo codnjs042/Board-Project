@@ -20,7 +20,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/css/**", "/js/**", "/img/**",
                                 "/user/login", "/user/signup", "/post").permitAll()
-                        .requestMatchers("/user", "/user/myHistory", "/user/delete", "/user/draft", "/post/write", "/post/*/edit", "/post/*/comment/**").authenticated()
+                        .requestMatchers("/user", "/user/myPage", "/user/delete", "/user/draft",
+                                "/post/write", "/post/*/edit", "/post/*/comment/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/post/*", "/notice/*").authenticated()
                         .requestMatchers(HttpMethod.GET, "/user/pwPage").hasAnyRole("USER", "ADMIN", "SUPER_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/user/myPage","/user/pwPage").hasAnyRole("USER", "ADMIN", "SUPER_ADMIN")
