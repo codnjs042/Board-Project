@@ -4,7 +4,7 @@ import com.example.demo.domain.post.domain.PostState;
 import com.example.demo.domain.post.dto.PostResponseDto;
 import com.example.demo.domain.post.service.PostService;
 import com.example.demo.domain.user.domain.User;
-import com.example.demo.domain.user.domain.UserRole;
+import com.example.demo.domain.user.dto.UserInfoRequestDto;
 import com.example.demo.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,14 +20,13 @@ public class UserFacade {
     private final SecurityUtil securityUtil;
 
     @Transactional
-    public void updateNickname(String nickname, Long userId){
+    public void updateNickname(UserInfoRequestDto dto, Long userId){
         User user = userService.findById(userId);
 
-        if(user.getRole()== UserRole.KAKAO_USER){
+        if(user.isSocialUser())
             throw new IllegalArgumentException("소셜 로그인 사용자는 닉네임을 변경할 수 없습니다.");
-        }
 
-        user.updateNickname(nickname);
+        user.updateNickname(dto.getNickname());
 
         securityUtil.updateSecurityContext(user);
     }

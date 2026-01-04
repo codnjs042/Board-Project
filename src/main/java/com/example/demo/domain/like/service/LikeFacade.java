@@ -4,7 +4,6 @@ import com.example.demo.domain.post.domain.Post;
 import com.example.demo.domain.post.domain.PostStatus;
 import com.example.demo.domain.post.service.PostService;
 import com.example.demo.domain.user.domain.User;
-import com.example.demo.domain.user.domain.UserStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,9 +18,6 @@ public class LikeFacade {
     @Transactional
     public void likeToggle(Long postId, User user){
         Post post = postService.findById(postId);
-
-        if(user.getStatus() == UserStatus.DISABLED)
-            throw new IllegalArgumentException("탈퇴한 회원은 서비스를 이용할 수 없습니다.");
 
         if (post.getStatus()== PostStatus.DISABLED)
             throw new IllegalArgumentException("삭제된 게시글입니다.");

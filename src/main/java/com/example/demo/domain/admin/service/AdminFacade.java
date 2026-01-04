@@ -46,7 +46,7 @@ public class AdminFacade {
                     && u.getUsername().equals(user.getUsername())
                     && u.getRole()==UserRole.ADMIN)
                 throw new IllegalArgumentException("일반 관리자는 다른 관리자 계정을 삭제할 수 없습니다");
-            u.updateStatus(UserStatus.DISABLED);
+            u.updateStatusForce(UserStatus.DISABLED);
         }
     }
 
@@ -58,7 +58,7 @@ public class AdminFacade {
     @Transactional
     public void deletePosts(PostAdminRequestDto dto, User user){
         if(user.getRole()!= UserRole.SUPER_ADMIN && user.getRole()!=UserRole.ADMIN)
-            throw new IllegalArgumentException("계정 삭제 권한이 없습니다");
+            throw new IllegalArgumentException("게시글 삭제 권한이 없습니다");
 
         if(dto.getId()==null)
             throw new IllegalArgumentException("삭제할 항목을 먼저 선택하세요");

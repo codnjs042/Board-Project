@@ -1,6 +1,5 @@
 package com.example.demo.domain.user.service;
 
-import com.example.demo.domain.admin.dto.UserAdminRequestDto;
 import com.example.demo.domain.admin.dto.UserAdminResponseDto;
 import com.example.demo.domain.user.domain.UserRole;
 import com.example.demo.domain.user.domain.User;
@@ -35,15 +34,8 @@ public class UserService {
         if(existing.isPresent()){
             throw new IllegalArgumentException("이미 존재하는 사용자입니다");
         }
-        String password = dto.getPassword().trim();
-        if(!dto.getUsername().matches("^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z0-9]{8,12}$")){
-            throw new IllegalArgumentException("아이디는 알파벳, 숫자가 포함된 8~12자리만 가능합니다");
-        }
-        if(!dto.getPassword().matches("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,12}$")){
-            throw new IllegalArgumentException("비밀번호는 알파벳, 숫자, 특수문자(!@#$%^&*)가 포함된 8~12자리만 가능합니다");
-        }
 
-        String encodePw = passwordEncoder.encode(password);
+        String encodePw = passwordEncoder.encode(dto.getPassword());
 
         User user = User.builder()
                 .username(dto.getUsername())
@@ -54,26 +46,26 @@ public class UserService {
     }
 
     @Transactional(noRollbackFor = ForceLogoutException.class)
-    public void updatePassword(UserPasswordRequestDto pwDto, CustomUserDetails userDetails){
+    public void updatePassword(UserPasswordRequestDto dto, CustomUserDetails userDetails){
         User user = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new IllegalStateException("인증된 사용자 정보를 찾을 수 없습니다."));
 
-        if(user.getRole()==UserRole.KAKAO_USER){
+        if(user.isSocialUser()){
             throw new IllegalArgumentException("소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다.");
         }
 
-        if(!passwordEncoder.matches(pwDto.getCurrentPw(), user.getPassword())){
+        if(user.mismatchRawPw(passwordEncoder, dto.getRawPw())){
             throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
         }
-        if(pwDto.getNewPw().equals(pwDto.getCurrentPw())){
+        if(dto.matchNewPw()){
             throw new IllegalArgumentException("현재 비밀번호와 같은 비밀번호로 변경할 수 없습니다.");
         }
-        if(!pwDto.getNewPw().equals(pwDto.getConfirmPw())){
+        if(dto.mismatchConfirmPw()){
             throw new IllegalArgumentException("변경 비밀번호가 일치하지 않습니다.");
         }
 
-        String encodePw = passwordEncoder.encode(pwDto.getNewPw());
-        user.updatePassword(encodePw);
+        String encodePw = passwordEncoder.encode(dto.getNewPw());
+        user.updatePw(encodePw);
         throw new ForceLogoutException("비밀번호가 변경되어 로그아웃되었습니다. 다시 로그인 해주세요.");
     }
 
@@ -97,15 +89,9 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalStateException("인증된 사용자 정보를 찾을 수 없습니다."));
 
-        if(user.getRole()==UserRole.SUPER_ADMIN)
+        if(user.isSuperAdmin())
             throw new IllegalArgumentException("슈퍼 관리자는 본인 계정을 삭제할 수 없습니다");
 
-        if(user.getStatus()==UserStatus.ACTIVE)
-            user.updateStatus(UserStatus.PENDING);
-
-        else if(user.getStatus()==UserStatus.PENDING)
-            user.updateStatus(UserStatus.ACTIVE);
-
-        else throw new ForceLogoutException("계정이 비활성화되어 삭제/복구 요청을 처리할 수 없습니다. 관리자에게 문의하세요.");
+        user.toggleStatusForUser();
     }
 }

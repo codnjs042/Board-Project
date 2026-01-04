@@ -23,7 +23,7 @@ public class SchedulerConfig {
 
         for(User user : users){
             if(user.getDeadLine().isBefore(LocalDateTime.now())){
-                user.updateStatus(UserStatus.DISABLED);
+                user.updateStatusForce(UserStatus.DISABLED);
                 throw new ForceLogoutException("계정이 비활성화되어 로그아웃되었습니다.");
             }
         }

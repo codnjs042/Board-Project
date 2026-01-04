@@ -47,12 +47,6 @@ public class CommentService {
         return parent;
     }
 
-    public CommentResponseDto findById(Long commentId){
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다"));
-        return new CommentResponseDto(comment);
-    }
-
     public List<CommentResponseDto> getRootComments(Long postId){
         return commentRepository.findAllByPost_IdAndStatusAndParentIsNull(postId, CommentStatus.ACTIVE)
                 .stream()

@@ -1,14 +1,12 @@
 package com.example.demo.domain.comment.controller;
 
 import com.example.demo.domain.comment.dto.CommentRequestDto;
-import com.example.demo.domain.comment.dto.CommentResponseDto;
 import com.example.demo.domain.comment.service.CommentFacade;
 import com.example.demo.domain.comment.service.CommentService;
 import com.example.demo.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -41,13 +39,6 @@ public class CommentController {
     @PostMapping("/comment/{id}/delete")
     public String delete(@PathVariable Long postId, @PathVariable Long id){
         commentService.delete(id);
-        return "redirect:/post/" + postId;
-    }
-
-    @GetMapping("/comment/{id}/reply")
-    public String reply(@PathVariable Long postId, @PathVariable Long parentId, Model model){
-        CommentResponseDto comment = commentService.findById(parentId);
-        model.addAttribute("comment", comment);
         return "redirect:/post/" + postId;
     }
 }

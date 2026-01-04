@@ -3,7 +3,7 @@ package com.example.demo.domain.user.domain;
 import com.example.demo.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 
 @Entity
@@ -32,11 +32,11 @@ public class User extends BaseEntity {
 
     @Builder
     public User(String username, String password, String nickname, UserRole role, UserStatus status){
-        this.username=username;
-        this.password=password;
-        this.nickname=nickname;
-        this.role=(role==null)?UserRole.USER:role;
-        this.status=(status==null)?UserStatus.ACTIVE:status;
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+        this.role = (role==null) ? UserRole.USER : role;
+        this.status = (status==null) ? UserStatus.ACTIVE : status;
     }
 
     public LocalDateTime getDeadLine(){
@@ -47,7 +47,20 @@ public class User extends BaseEntity {
         return (role == UserRole.ADMIN) || (role == UserRole.SUPER_ADMIN);
     }
 
-    public void updatePassword(String password){
+    public boolean isSuperAdmin(){
+        return role == UserRole.SUPER_ADMIN;
+    }
+
+    public boolean isSocialUser(){
+        return role == UserRole.KAKAO_USER;
+    }
+
+    //matches(문자열, 암호화된 문자열)
+    public boolean mismatchRawPw(PasswordEncoder encoder, String rawPassword){
+        return encoder.matches(rawPassword, this.password);
+    }
+
+    public void updatePw(String password){
         this.password = password;
     }
 
@@ -55,7 +68,14 @@ public class User extends BaseEntity {
         this.nickname = nickname;
     }
 
-    public void updateStatus(UserStatus status) {
+    public void toggleStatusForUser() {
+        if(status == UserStatus.ACTIVE)
+            status = UserStatus.PENDING;
+        else if(status == UserStatus.PENDING)
+            status = UserStatus.ACTIVE;
+    }
+
+    public void updateStatusForce(UserStatus status){
         this.status = status;
     }
 }

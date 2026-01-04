@@ -117,7 +117,7 @@ public class KakaoService {
 
         User user = userRepository.findByUsername(id)
                 .map(u -> {
-                    u.updateStatus(UserStatus.ACTIVE);
+                    u.updateStatusForce(UserStatus.ACTIVE);
                     return u;
                 })
                 .orElseGet(() -> {
@@ -173,7 +173,7 @@ public class KakaoService {
             Long id = jsonNode.get("id").asLong();
             User user = userRepository.findByUsername(target_id)
                     .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
-            user.updateStatus(UserStatus.DISABLED);
+            user.updateStatusForce(UserStatus.DISABLED);
         } catch (Exception e) {
             e.printStackTrace();
         }

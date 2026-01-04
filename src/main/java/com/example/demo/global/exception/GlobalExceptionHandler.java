@@ -3,22 +3,21 @@ package com.example.demo.global.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-
 import java.io.IOException;
 import java.net.URI;
 
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
+    //임시
+    @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class, MethodArgumentNotValidException.class})
     public String handleIllegalArgument(HttpServletRequest request,
                                         RedirectAttributes redirectAttrs,
                                         Exception e){

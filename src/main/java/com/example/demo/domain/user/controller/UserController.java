@@ -7,6 +7,7 @@ import com.example.demo.domain.post.domain.PostState;
 import com.example.demo.domain.post.dto.PostResponseDto;
 import com.example.demo.domain.user.service.UserService;
 import com.example.demo.global.security.CustomUserDetails;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,7 +33,7 @@ public class UserController {
     }
 
     @PostMapping("/user/signup")
-    public String signup(@ModelAttribute UserSignupRequestDto dto){
+    public String signup(@Valid @ModelAttribute UserSignupRequestDto dto){
         userService.signup(dto);
         return "redirect:/user/login";
     }
@@ -49,9 +50,9 @@ public class UserController {
     }
 
     @PostMapping("/user/myPage")
-    public String updateNickname(@RequestParam String nickname,
+    public String updateNickname(@Valid @ModelAttribute UserInfoRequestDto dto,
                                  @AuthenticationPrincipal CustomUserDetails userDetails){
-        userFacade.updateNickname(nickname, userDetails.getId());
+        userFacade.updateNickname(dto, userDetails.getId());
         return "redirect:/user/myPage";
     }
 
@@ -70,7 +71,7 @@ public class UserController {
     }
 
     @PostMapping("/user/pwPage")
-    public String pwPage(@ModelAttribute UserPasswordRequestDto dto,
+    public String pwPage(@Valid @ModelAttribute UserPasswordRequestDto dto,
                          @AuthenticationPrincipal CustomUserDetails userDetails){
         userService.updatePassword(dto, userDetails);
         return "redirect:/user/login";
