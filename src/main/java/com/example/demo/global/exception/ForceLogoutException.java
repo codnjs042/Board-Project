@@ -1,7 +1,13 @@
 package com.example.demo.global.exception;
 
+import lombok.Getter;
+
+@Getter
 public class ForceLogoutException extends RuntimeException{
-    public ForceLogoutException(String message){
-        super(message);
+    private final ErrorCode errorCode;
+
+    public ForceLogoutException(ErrorCode errorCode){
+        super(ErrorCode.FORCE_LOGOUT.getMessage());
+        this.errorCode=errorCode;
     }
 }

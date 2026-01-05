@@ -7,6 +7,8 @@ import com.example.demo.domain.comment.dto.CommentResponseDto;
 import com.example.demo.domain.comment.repository.CommentRepository;
 import com.example.demo.domain.post.domain.Post;
 import com.example.demo.domain.user.domain.User;
+import com.example.demo.global.exception.BusinessException;
+import com.example.demo.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,7 +48,7 @@ public class CommentService {
     }
     public Comment findById(Long commentId){
         return commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
     }
 
     public List<CommentResponseDto> getRootComments(Long postId){
@@ -61,7 +63,7 @@ public class CommentService {
         Comment comment = findById(commentId);
 
         if(!comment.isAuthor(user.getId()))
-            throw new IllegalArgumentException("해당 댓글의 수정 권한이 없습니다.");
+            throw new BusinessException(ErrorCode.INVALID_PERMISSION);
 
         comment.modify(dto.getComment());
     }
@@ -71,7 +73,7 @@ public class CommentService {
         Comment comment = findById(commentId);
 
         if(!comment.isAuthor(user.getId()))
-            throw new IllegalArgumentException("해당 댓글의 삭제 권한이 없습니다.");
+            throw new BusinessException(ErrorCode.INVALID_PERMISSION);
 
         comment.updateStatus(CommentStatus.DISABLED);
         comment.getPost().updateCommentCount(1L);

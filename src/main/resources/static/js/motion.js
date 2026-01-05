@@ -1,4 +1,11 @@
 $(function(){
+    const error = document.body.getAttribute('data-error');
+    if(error){
+        alert(error);
+    }
+    console.log("현재 바디 태그:", document.body);
+    console.log("바디의 모든 데이터:", document.body.dataset);
+
     $("button:contains('좋아요')").on("click", function(){
         if($(this).prop("data-like")){
             $(this).css({

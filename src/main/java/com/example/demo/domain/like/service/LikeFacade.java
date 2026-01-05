@@ -4,6 +4,8 @@ import com.example.demo.domain.post.domain.Post;
 import com.example.demo.domain.post.domain.PostStatus;
 import com.example.demo.domain.post.service.PostService;
 import com.example.demo.domain.user.domain.User;
+import com.example.demo.global.exception.BusinessException;
+import com.example.demo.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +22,10 @@ public class LikeFacade {
         Post post = postService.findById(postId);
 
         if (post.getStatus()== PostStatus.DISABLED)
-            throw new IllegalArgumentException("삭제된 게시글입니다.");
+            throw new BusinessException(ErrorCode.POST_NOT_FOUND);
 
         if (post.getAuthor().getId().equals(user.getId()))
-            throw new IllegalArgumentException("본인이 작성한 게시글은 좋아요를 누를 수 없습니다.");
+            throw new BusinessException(ErrorCode.POLICY_VIOLATION);
 
         likeService.updateLike(user, post);
     }

@@ -12,6 +12,8 @@ import com.example.demo.domain.user.domain.User;
 import com.example.demo.domain.user.domain.UserRole;
 import com.example.demo.domain.user.domain.UserStatus;
 import com.example.demo.domain.user.service.UserService;
+import com.example.demo.global.exception.BusinessException;
+import com.example.demo.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -32,20 +34,20 @@ public class AdminFacade {
     @Transactional
     public void deleteUsers(UserAdminRequestDto dto, User user){
         if(user.getRole()!=UserRole.SUPER_ADMIN && user.getRole()!=UserRole.ADMIN)
-            throw new IllegalArgumentException("계정 삭제 권한이 없습니다");
+            throw new BusinessException(ErrorCode.INVALID_PERMISSION);
 
         if(dto.getId()==null)
-            throw new IllegalArgumentException("삭제할 항목을 먼저 선택하세요");
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
 
         List<User> users = userService.findAllById(dto.getId());
 
         for (User u : users) {
             if(u.getRole()==UserRole.SUPER_ADMIN)
-                throw new IllegalArgumentException("슈퍼 관리자 계정은 삭제할 수 없습니다");
+                throw new BusinessException(ErrorCode.POLICY_VIOLATION);
             if(user.getRole()==UserRole.ADMIN
                     && u.getUsername().equals(user.getUsername())
                     && u.getRole()==UserRole.ADMIN)
-                throw new IllegalArgumentException("일반 관리자는 다른 관리자 계정을 삭제할 수 없습니다");
+                throw new BusinessException(ErrorCode.INVALID_PERMISSION);
             u.updateStatusForce(UserStatus.DISABLED);
         }
     }
@@ -58,20 +60,20 @@ public class AdminFacade {
     @Transactional
     public void deletePosts(PostAdminRequestDto dto, User user){
         if(user.getRole()!= UserRole.SUPER_ADMIN && user.getRole()!=UserRole.ADMIN)
-            throw new IllegalArgumentException("게시글 삭제 권한이 없습니다");
+            throw new BusinessException(ErrorCode.INVALID_PERMISSION);
 
         if(dto.getId()==null)
-            throw new IllegalArgumentException("삭제할 항목을 먼저 선택하세요");
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
 
         List<Post> posts = postService.findAllById(dto.getId());
 
         for (Post p : posts) {
             if(p.getAuthor().getRole()==UserRole.SUPER_ADMIN)
-                throw new IllegalArgumentException("슈퍼 관리자 게시글은 삭제할 수 없습니다");
+                throw new BusinessException(ErrorCode.POLICY_VIOLATION);
             if(user.getRole()==UserRole.ADMIN
                     && p.getAuthor().getUsername().equals(user.getUsername())
                     && p.getAuthor().getRole()==UserRole.ADMIN)
-                throw new IllegalArgumentException("일반 관리자는 다른 관리자 게시글을 삭제할 수 없습니다");
+                throw new BusinessException(ErrorCode.INVALID_PERMISSION);
             p.updateStatus(PostStatus.DISABLED);
         }
     }

@@ -7,6 +7,8 @@ import com.example.demo.domain.post.domain.Post;
 import com.example.demo.domain.post.domain.PostStatus;
 import com.example.demo.domain.post.dto.PostDetailResponseDto;
 import com.example.demo.domain.post.dto.PostResponseDto;
+import com.example.demo.global.exception.BusinessException;
+import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,7 @@ public class PostFacade {
         Post post = postService.findById(postId);
 
         if(!post.isPublished() || !post.isActive())
-            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+            throw new BusinessException(ErrorCode.POST_NOT_FOUND);
 
         List<CommentResponseDto> comment = commentService.getRootComments(post.getId());
 

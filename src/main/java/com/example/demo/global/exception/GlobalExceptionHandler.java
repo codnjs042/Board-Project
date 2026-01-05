@@ -16,17 +16,28 @@ import java.net.URI;
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    //임시
-    @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class, MethodArgumentNotValidException.class})
-    public String handleIllegalArgument(HttpServletRequest request,
-                                        RedirectAttributes redirectAttrs,
-                                        Exception e){
+    @ExceptionHandler(BusinessException.class)
+    public String handleBusiness(HttpServletRequest request,
+                                 RedirectAttributes redirectAttrs,
+                                 BusinessException e){
         String referer = request.getHeader("Referer");
         String preUri = "/";
         if(referer!=null) preUri = URI.create(referer).getPath();
         redirectAttrs.addFlashAttribute("error", e.getMessage());
-        String errorType = e instanceof IllegalArgumentException?"Illegal Argument":"Illegal State";
-        log.warn("{}: [{}] {} 요청 by {}", errorType, request.getMethod(), request.getRequestURI(), request.getUserPrincipal(), e);
+        log.warn("Business Exception: [{}] {} 요청 by {}", request.getMethod(), request.getRequestURI(), request.getUserPrincipal(), e);
+        return "redirect:" + preUri;
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public String handleMethodArgumentNotValid(HttpServletRequest request,
+                                               RedirectAttributes redirectAttrs,
+                                               MethodArgumentNotValidException e){
+        String referer = request.getHeader("Referer");
+        String preUri = "/";
+        if(referer!=null) preUri = URI.create(referer).getPath();
+        String message = e.getBindingResult().getAllErrors().getFirst().getDefaultMessage();
+        redirectAttrs.addFlashAttribute("error", message);
+        log.warn("Method Argument Not Valid: [{}] {} 요청 by {}", request.getMethod(), request.getRequestURI(), request.getUserPrincipal(), e);
         return "redirect:" + preUri;
     }
 

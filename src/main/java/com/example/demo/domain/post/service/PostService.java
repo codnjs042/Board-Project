@@ -9,6 +9,8 @@ import com.example.demo.domain.post.dto.PostRequestDto;
 import com.example.demo.domain.post.dto.PostResponseDto;
 import com.example.demo.domain.post.repository.PostRepository;
 import com.example.demo.domain.user.domain.User;
+import com.example.demo.global.exception.BusinessException;
+import com.example.demo.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -50,7 +52,7 @@ public class PostService {
 
     public Post findById(Long postId){
         return postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
     }
 
     public List<Post> findAllById(List<Long> postId){
@@ -69,7 +71,7 @@ public class PostService {
         Post post = findById(postId);
 
         if(!post.isAuthor(user.getId()))
-            throw new IllegalArgumentException("해당 게시글의 수정 권한이 없습니다.");
+            throw new BusinessException(ErrorCode.INVALID_PERMISSION);
 
         return PostResponseDto.from(post);
     }
@@ -79,10 +81,10 @@ public class PostService {
         Post post = findById(postId);
 
         if(!post.isAuthor(user.getId()))
-            throw new IllegalArgumentException("해당 게시글의 수정 권한이 없습니다.");
+            throw new BusinessException(ErrorCode.INVALID_PERMISSION);
 
         if (!user.isAdmin() && dto.getType().equals(PostType.NOTICE))
-            throw new IllegalArgumentException("공지사항 설정 권한이 없습니다.");
+            throw new BusinessException(ErrorCode.INVALID_PERMISSION);
 
         post.modify(dto.getTitle(), dto.getContent(), dto.getType());
     }
@@ -92,7 +94,7 @@ public class PostService {
         Post post = findById(postId);
 
         if(!post.isAuthor(user.getId()))
-            throw new IllegalArgumentException("해당 게시글의 삭제 권한이 없습니다.");
+            throw new BusinessException(ErrorCode.INVALID_PERMISSION);
 
         post.updateStatus(PostStatus.DISABLED);
     }

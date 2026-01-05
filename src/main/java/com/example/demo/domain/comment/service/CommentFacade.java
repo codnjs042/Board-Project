@@ -7,6 +7,8 @@ import com.example.demo.domain.post.domain.Post;
 import com.example.demo.domain.post.domain.PostType;
 import com.example.demo.domain.post.service.PostService;
 import com.example.demo.domain.user.domain.User;
+import com.example.demo.global.exception.BusinessException;
+import com.example.demo.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +26,7 @@ public class CommentFacade {
         Post post = postService.findById(postId);
 
         if (post.getType()== PostType.NOTICE){
-            throw new IllegalArgumentException("공지글에는 댓글을 작성할 수 없습니다");
+            throw new BusinessException(ErrorCode.POLICY_VIOLATION);
         }
 
         Comment comment = commentService.save(user, post, dto);

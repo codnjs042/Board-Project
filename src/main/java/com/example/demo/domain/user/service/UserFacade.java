@@ -5,6 +5,8 @@ import com.example.demo.domain.post.dto.PostResponseDto;
 import com.example.demo.domain.post.service.PostService;
 import com.example.demo.domain.user.domain.User;
 import com.example.demo.domain.user.dto.UserInfoRequestDto;
+import com.example.demo.global.exception.BusinessException;
+import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,7 +26,7 @@ public class UserFacade {
         User user = userService.findById(userId);
 
         if(user.isSocialUser())
-            throw new IllegalArgumentException("소셜 로그인 사용자는 닉네임을 변경할 수 없습니다.");
+            throw new BusinessException(ErrorCode.POLICY_VIOLATION);
 
         user.updateNickname(dto.getNickname());
 
