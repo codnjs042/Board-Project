@@ -14,7 +14,7 @@
                         <span th:text="${comment.authorName}"></span><br>
                         <span th:text="${comment.comment}"></span>
                         <span th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
-                        <small th:if="${comment.updatedAt!=null}" th:text="|${#temporals.format(comment.updatedAt, 'yyyy-MM-dd HH:mm')}에 수정됨|"></small>
+                        <small th:if="${comment.publishedAt!=comment.updatedAt}">(수정됨)</small>
                     </div>
                     <br>
                     <div sec:authorize="isAuthenticated()">
