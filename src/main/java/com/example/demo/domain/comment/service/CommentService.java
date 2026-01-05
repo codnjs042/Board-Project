@@ -35,36 +35,44 @@ public class CommentService {
 
     @Transactional
     public Comment connect(Long parentId, Long commentId){
-        Comment parent = commentRepository.findById(parentId)
-                .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다"));
+        Comment parent = findById(parentId);
 
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다"));
+        Comment comment = findById(commentId);
 
         comment.updateParent(parent);
         parent.updateChild(comment);
 
         return parent;
     }
+    public Comment findById(Long commentId){
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다"));
+    }
 
     public List<CommentResponseDto> getRootComments(Long postId){
-        return commentRepository.findAllByPost_IdAndStatusAndParentIsNull(postId, CommentStatus.ACTIVE)
+        return commentRepository.findAllByRootComments(postId)
                 .stream()
                 .map(CommentResponseDto::from)
                 .toList();
     }
 
     @Transactional
-    public void modify(Long id, CommentRequestDto dto){
-        Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다"));
+    public void modify(Long commentId, CommentRequestDto dto, User user){
+        Comment comment = findById(commentId);
+
+        if(!comment.isAuthor(user.getId()))
+            throw new IllegalArgumentException("해당 댓글의 수정 권한이 없습니다.");
+
         comment.modify(dto.getComment());
     }
 
     @Transactional
-    public void delete(Long id){
-        Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다"));
+    public void delete(Long commentId, User user){
+        Comment comment = findById(commentId);
+
+        if(!comment.isAuthor(user.getId()))
+            throw new IllegalArgumentException("해당 댓글의 삭제 권한이 없습니다.");
+
         comment.updateStatus(CommentStatus.DISABLED);
         comment.getPost().updateCommentCount(1L);
     }

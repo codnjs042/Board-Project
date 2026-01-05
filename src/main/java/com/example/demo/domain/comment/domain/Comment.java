@@ -49,6 +49,10 @@ public class Comment extends BaseEntity {
         this.status=(status==null)?CommentStatus.ACTIVE:status;
     }
 
+    public boolean isAuthor(Long userId){
+        return this.author.getId().equals(userId);
+    }
+
     public void modify(String comment){
         this.comment=comment;
     }

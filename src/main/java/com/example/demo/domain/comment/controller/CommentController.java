@@ -17,28 +17,28 @@ public class CommentController {
     private final CommentFacade commentFacade;
 
     @PostMapping("/comment")
-    public String write(
-            @PathVariable Long postId,
-            @RequestParam(required = false) Long parentId,
-            @RequestParam(required = false) Long editId,
-            @ModelAttribute CommentRequestDto dto,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        if(editId==null)
-            commentFacade.create(parentId, postId, dto, userDetails.getUser());
-        else
-            return modify(postId, editId, dto);
+    public String write(@PathVariable Long postId,
+                        @RequestParam(required = false) Long parentId,
+                        @ModelAttribute CommentRequestDto dto,
+                        @AuthenticationPrincipal CustomUserDetails userDetails) {
+        commentFacade.create(parentId, postId, dto, userDetails.getUser());
         return "redirect:/post/" + postId;
     }
 
-    @PostMapping("/comment/{id}/edit")
-    public String modify(@PathVariable Long postId, Long id, @ModelAttribute CommentRequestDto dto){
-        commentService.modify(id, dto);
+    @PostMapping("/comment/{commentId}")
+    public String modify(@PathVariable Long postId,
+                         @PathVariable Long commentId,
+                         @ModelAttribute CommentRequestDto dto,
+                         @AuthenticationPrincipal CustomUserDetails userDetails) {
+        commentService.modify(commentId, dto, userDetails.getUser());
         return "redirect:/post/" + postId;
     }
 
-    @PostMapping("/comment/{id}/delete")
-    public String delete(@PathVariable Long postId, @PathVariable Long id){
-        commentService.delete(id);
+    @PostMapping("/comment/{commentId}/delete")
+    public String delete(@PathVariable Long postId,
+                         @PathVariable Long commentId,
+                         @AuthenticationPrincipal CustomUserDetails userDetails) {
+        commentService.delete(commentId, userDetails.getUser());
         return "redirect:/post/" + postId;
     }
 }

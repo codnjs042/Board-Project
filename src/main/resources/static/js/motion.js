@@ -1,11 +1,4 @@
 $(function(){
-//    $("postInputSection input[type='file']").on("change", function(){
-//        const files = this.files;
-//        for(let i=0; i<files.length;i++){
-//            const url = URL.createObjectURL(files[i])
-//        }
-//    })
-
     $("button:contains('좋아요')").on("click", function(){
         if($(this).prop("data-like")){
             $(this).css({
@@ -67,13 +60,15 @@ $(function(){
             li = $(this).closest("li");
             backup = li.html();
             li.html(backup);
+            var commentId = li.attr("data-id");
+            var postId = [[${post.id}]];
             var text = li.children("p").children("span").eq(1).text();
             var input = $(".comment_input").clone(true, true)
             input.removeClass("comment_input").addClass("new_comment_input");
+            input.find("form").attr("action", `/post/${postId}/comment/${commentId}`);
             input.find("textarea").val(text);
             input.find("button").after("<button>취소</button>");
-            var id = li.attr("data-id");
-            input.find("form").append(`<input type="hidden" name="editId" value="${id}">`);
+
             li.html(input);
             li.attr("data-mode", "edit");
         }else{
