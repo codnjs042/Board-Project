@@ -14,10 +14,10 @@
                         <span th:text="${comment.authorName}"></span><br>
                         <span th:text="${comment.comment}"></span>
                         <span th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
-                        <small th:if="${comment.publishedAt!=comment.updatedAt}">(수정됨)</small>
+                        <small th:if="${comment.createdAt!=comment.updatedAt}">(수정됨)</small>
                     </div>
                     <br>
-                    <div sec:authorize="isAuthenticated()">
+                    <div sec:authorize="isAuthenticated()" class="exists_box">
                         <div th:if="${#authentication.name == comment.author.username}">
                             <button class="comment_edit">수정</button>
                             <form th:action="@{|/post/${comment.post.id}/comment/${comment.id}/delete|}" method="post" style="display:inline;">
@@ -25,6 +25,8 @@
                             </form>
                         </div>
                         <button class="comment_reply">답글 쓰기</button>
+                    </div>
+                    <div sec:authorize="isAnonymous()" class="exists_box">
                     </div>
                 </div>
                 <div th:unless="${comment.status.name=='ACTIVE'}">

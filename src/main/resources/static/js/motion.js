@@ -3,8 +3,6 @@ $(function(){
     if(error){
         alert(error);
     }
-    console.log("현재 바디 태그:", document.body);
-    console.log("바디의 모든 데이터:", document.body.dataset);
 
     $("button:contains('좋아요')").on("click", function(){
         if($(this).prop("data-like")){
@@ -68,8 +66,8 @@ $(function(){
             backup = li.html();
             li.html(backup);
             var commentId = li.attr("data-id");
-            var postId = [[${post.id}]];
-            var text = li.children("p").children("span").eq(1).text();
+            var postId = $("#postSection").data("id");
+            var text = li.find("span").eq(1).text();
             var input = $(".comment_input").clone(true, true)
             input.removeClass("comment_input").addClass("new_comment_input");
             input.find("form").attr("action", `/post/${postId}/comment/${commentId}`);
@@ -87,10 +85,10 @@ $(function(){
     $(document).on("click", ".comment_reply", function(){
         if($(this).text()=="답글 쓰기"){
             if($("div").hasClass("new_comment_input")){
-                $(".comment_reply").text("답글 쓰기");
-                $(".comment_reply").next().remove();
+                $(".new_comment_input").prev(".comment_reply").text("답글 쓰기");
+                $(".new_comment_input").remove();
                 if (li) li.html(backup);
-                $(".comment_edit").attr("data-mode", "read");
+                $("li").attr("data-mode", "read");
             }
             $(this).text("답글 닫기");
             var input = $(".comment_input").clone(true, true)
@@ -100,13 +98,13 @@ $(function(){
             $(this).after(input);
         }else{
             $(this).text("답글 쓰기");
-            $(this).next(".comment_input").remove();
+            $(this).next().remove();
         }
     });
 
     $(document).on("click", "button:contains('취소')", function(){
         if (li) li.html(backup);
-        $(".comment_edit").attr("data-mode", "read");
+        li.attr("data-mode", "read");
     });
 });
 //$(function(){

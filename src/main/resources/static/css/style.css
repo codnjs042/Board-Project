@@ -111,3 +111,18 @@ button, input, textarea{
     justify-content: center;
     align-items: center;
 }
+
+#comments li{
+    background: #f9f9f9;
+    padding: 15px;
+}
+
+#comments li>div{
+    background: #f5f5f5;
+    padding: 15px;
+    margin: 0 0 10px 0;
+}
+
+#comments .exists_box {
+    min-height: 20px;
+}
