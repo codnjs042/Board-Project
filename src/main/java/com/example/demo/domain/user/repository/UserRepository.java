@@ -18,8 +18,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // 관리자용 사용자 정보 조회
     @Query("select u from User u " +
-            "where u.role=:role " +
-            "and u.status=:status " +
+            "where (:role is null or u.role=:role) " +
+            "and (:status is null or u.status=:status) " +
             "and (:keyword is null or " +
                 "(u.username like %:keyword%) or " +
                 "(u.nickname like %:keyword%))")

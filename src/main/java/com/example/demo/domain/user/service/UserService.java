@@ -50,7 +50,7 @@ public class UserService {
     @Transactional(noRollbackFor = ForceLogoutException.class)
     public void updatePassword(UserPasswordRequestDto dto, CustomUserDetails userDetails){
         User user = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.SESSION_USER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         if(user.isSocialUser()){
             throw new BusinessException(ErrorCode.POLICY_VIOLATION);
@@ -73,11 +73,16 @@ public class UserService {
 
     public User findById(Long userId){
         return userRepository.findById(userId)
-                .orElseThrow(()-> new BusinessException(ErrorCode.SESSION_USER_NOT_FOUND));
+                .orElseThrow(()-> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 
     public List<User> findAllById(List<Long> userId){
         return userRepository.findAllById(userId);
+    }
+
+    public UserProfileResponseDto getUserProfile(Long userId){
+        User user = findById(userId);
+        return UserProfileResponseDto.from(user);
     }
 
     public Page<UserAdminResponseDto> searchUsersForAdmin(UserRole role, UserStatus status, String keyword, int page){
@@ -89,7 +94,7 @@ public class UserService {
     @Transactional
     public void deleteToggle(Long userId){
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.SESSION_USER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         if(user.isSuperAdmin())
             throw new BusinessException(ErrorCode.POLICY_VIOLATION);

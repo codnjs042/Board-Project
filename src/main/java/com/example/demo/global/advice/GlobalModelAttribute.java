@@ -1,6 +1,6 @@
 package com.example.demo.global.advice;
 
-import com.example.demo.domain.user.dto.UserResponseDto;
+import com.example.demo.domain.user.dto.UserInfoResponseDto;
 import com.example.demo.domain.user.service.UserService;
 import com.example.demo.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class GlobalModelAttribute {
     private final UserService userService;
     @ModelAttribute("user")
-    public UserResponseDto addUserToModel(@AuthenticationPrincipal CustomUserDetails userDetails){
+    public UserInfoResponseDto addUserToModel(@AuthenticationPrincipal CustomUserDetails userDetails){
         if(userDetails!=null){
-            return UserResponseDto.from(userDetails.getUser());
+            return UserInfoResponseDto.from(userDetails.getUser());
         }
         return null;
     }

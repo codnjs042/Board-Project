@@ -46,7 +46,7 @@
                                 <input type="hidden" name="role" th:value="${user.role}" disabled>
                             </td>
                             <td th:text="${iterStat.index+1}"></td>
-                            <td th:text="${user.username}"></td>
+                            <td><a th:href="@{/user/{id}/profile(id=${user.id})}" th:text="${user.username}"></a></td>
                             <td th:text="${user.nickname}"></td>
                             <td th:text="${user.role.name()=='SUPER_ADMIN'?'슈퍼관리자':user.role.name()=='ADMIN'?'관리자':'사용자'}"></td>
                             <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}"></td>

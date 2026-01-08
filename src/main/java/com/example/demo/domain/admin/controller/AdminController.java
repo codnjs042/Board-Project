@@ -5,6 +5,7 @@ import com.example.demo.domain.admin.dto.PostAdminResponseDto;
 import com.example.demo.domain.admin.dto.UserAdminRequestDto;
 import com.example.demo.domain.admin.dto.UserAdminResponseDto;
 import com.example.demo.domain.admin.service.AdminFacade;
+import com.example.demo.domain.post.domain.PostState;
 import com.example.demo.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -43,7 +44,7 @@ public class AdminController {
                            @RequestParam(required=false) String keyword,
                            @RequestParam(required=false) String type,
                            Model model){
-        Page<PostAdminResponseDto> postPage = adminFacade.getPosts(null, null, page, type, keyword);
+        Page<PostAdminResponseDto> postPage = adminFacade.getPosts(PostState.PUBLISHED, null, page, type, keyword);
         model.addAttribute("postPage", postPage);
         model.addAttribute("keyword", keyword);
         return "admin/post";

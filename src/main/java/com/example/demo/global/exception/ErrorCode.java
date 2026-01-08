@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ErrorCode {
     USER_ALREADY_EXIST(HttpStatus.CONFLICT, "U001", "이미 존재하는 사용자입니다."),
-    SESSION_USER_NOT_FOUND(HttpStatus.UNAUTHORIZED, "U002", "사용자가 존재하지 않습니다."),
+    USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "U002", "사용자가 존재하지 않습니다."),
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "I001", "입력 형식이 올바르지 않습니다."),
     MISMATCH(HttpStatus.BAD_REQUEST, "M001", "입력값이 일치하지 않습니다."),
     POLICY_VIOLATION(HttpStatus.UNPROCESSABLE_ENTITY, "P001", "정책상 허용되지 않습니다."),

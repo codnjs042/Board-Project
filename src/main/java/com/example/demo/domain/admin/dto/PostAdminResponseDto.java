@@ -16,6 +16,9 @@ public class PostAdminResponseDto {
     private String content;
     private User author;
     private String authorName;
+    private Long view;
+    private Long commentCount;
+    private Long likeCount;
     private PostState state;
     private PostType type;
     private PostStatus status;
@@ -29,6 +32,9 @@ public class PostAdminResponseDto {
         this.content=post.getContent();
         this.author=post.getAuthor();
         this.authorName=post.getAuthorName();
+        this.view=post.getView();
+        this.commentCount=post.getCommentCount();
+        this.likeCount=post.getLikeCount();
         this.state=post.getState();
         this.type=post.getType();
         this.status=post.getStatus();

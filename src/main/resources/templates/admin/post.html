@@ -17,7 +17,7 @@
             <nav>
                 <ul>
                     <li><a th:href="@{/admin}">유저 관리</a></li>
-                    <li><a th:href="@{admin/post}">게시글 관리</a></li>
+                    <li><a th:href="@{/admin/post}">게시글 관리</a></li>
                 </ul>
             </nav>
             <section>
@@ -39,6 +39,9 @@
                             <th>생성일</th>
                             <th>발행일</th>
                             <th>수정일</th>
+                            <th>조회수</th>
+                            <th>댓글개수</th>
+                            <th>좋아요개수</th>
                             <th>공개여부</th>
                             <th>게시글유형</th>
                             <th>관리상태</th>
@@ -48,13 +51,16 @@
                         <tr th:each="post, iterStat : ${postPage.content}">
                             <td><input type="checkbox" name="id" th:value="${post.id}"></td>
                             <td th:text="${iterStat.index+1}"></td>
-                            <td th:text="${post.title}"></td>
+                            <td><a th:href="@{/post/{id}(id=${post.id})}" th:text="${post.title}"></a></td>
                             <td th:text="${post.content.length()<30?post.content:post.content.substring(0,30)+'...'}"></td>
-                            <td th:text="${post.author.username}"></td>
+                            <td><a th:href="@{/user/{id}/profile(id=${post.author.id})}" th:text="${post.author.username}"></a></td>
                             <td th:text="${post.authorName}"></td>
                             <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
                             <td th:text="${#temporals.format(post.publishedAt, 'yyyy-MM-dd HH:mm')}"></td>
                             <td th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd HH:mm')}"></td>
+                            <td th:text="${post.view}"></td>
+                            <td th:text="${post.commentCount}"></td>
+                            <td th:text="${post.likeCount}"></td>
                             <td th:text="${post.state.name()=='PUBLISHED'?'공개':'임시'}"></td>
                             <td th:text="${post.type.name()=='NOTICE'?'공지':'일반'}"></td>
                             <td th:text="${post.status.name()=='ACTIVE'?'활성화':'비활성화'}"></td>
@@ -80,8 +86,9 @@
 
                 <form th:action="@{/admin/post}" method="get">
                     <select name="type">
-                        <option value="user">아이디+닉네임</option>
-                        <option value="post">제목+내용</option>
+                        <option value="title">제목</option>
+                        <option value="content">내용</option>
+                        <option value="id">아이디</option>
                     </select>
                     <input type="text" name="keyword" placeholder="검색어를 입력하세요" th:value="${keyword}"/>
                     <button type="submit">검색</button>

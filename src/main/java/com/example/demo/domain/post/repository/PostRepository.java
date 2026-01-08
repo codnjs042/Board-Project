@@ -38,15 +38,14 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     // 관리자용 사용자 게시글 조회
     @Query("select p from Post p " +
             "where p.state=:state " +
-            "and p.status=:status " +
+            "and (:status is null or p.status=:status) " +
             "and (:keyword is null or " +
                 "(:type='title' and p.title like %:keyword%) or" +
                 "(:type='content' and p.content like %:keyword%) or " +
-                "(:type='author' and p.author.nickname like %:keyword%))")
+                "(:type='id' and p.author.username like %:keyword%))")
     Page<Post> searchPostsForAdmin(@Param("state") PostState state,
                                 @Param("status") PostStatus status,
                                 @Param("type") String type,
                                 @Param("keyword") String keyword,
                                 Pageable pageable);
-
 }

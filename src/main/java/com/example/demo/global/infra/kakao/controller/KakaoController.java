@@ -1,5 +1,5 @@
 package com.example.demo.global.infra.kakao.controller;
-import com.example.demo.domain.user.dto.UserResponseDto;
+import com.example.demo.domain.user.dto.UserInfoResponseDto;
 import com.example.demo.global.infra.kakao.service.KakaoService;
 import com.example.demo.domain.user.domain.User;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,11 +11,9 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.security.Principal;
 import java.util.Map;
 
 
@@ -40,7 +38,7 @@ public class KakaoController {
                          HttpServletRequest request,
                          HttpServletResponse response,
                          Authentication authentication){
-        UserResponseDto user = (UserResponseDto) model.getAttribute("user");
+        UserInfoResponseDto user = (UserInfoResponseDto) model.getAttribute("user");
         HttpSession session = request.getSession(false);
         if (session != null) {
             String token = (String) session.getAttribute("KAKAO_ACCESS_TOKEN");

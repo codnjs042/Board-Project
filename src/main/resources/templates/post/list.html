@@ -32,9 +32,11 @@
             <th th:if="${post.type.name() == 'NOTICE' and #strings.isEmpty(param.keyword)}" th:text="'<공지>'"></th>
             <th th:unless="${post.type.name() == 'NOTICE' and #strings.isEmpty(param.keyword)}" th:text="${postPage.totalElements-postPage.number*postPage.size-iterStat.index}"></th>
             <td>
-                <a th:href="@{/post/{id}(id=${post.id})}" th:text="${post.title}"></a>
+                <a th:href="@{/post/{id}(id=${post.id})}" th:text="|${post.title} [${post.commentCount}]|"></a>
             </td>
-            <td th:text="${post.authorName}"></td>
+            <td>
+                <a th:href="@{/user/{id}/profile(id=${post.author.id})}" th:text="${post.authorName}"></a>
+            </td>
             <td th:text="${#temporals.format(post.publishedAt, 'yyyy-MM-dd HH:mm')}"></td>
         </tr>
         </tbody>

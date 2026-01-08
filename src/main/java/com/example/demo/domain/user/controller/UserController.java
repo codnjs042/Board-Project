@@ -90,4 +90,15 @@ public class UserController {
         model.addAttribute("draftPage", draftPage);
         return "user/draft";
     }
+
+    @GetMapping("/user/{userId}/profile")
+    public String profile(@RequestParam(defaultValue="0") int page,
+                          @PathVariable Long userId,
+                          Model model){
+        UserProfileResponseDto profileUser = userService.getUserProfile(userId);
+        model.addAttribute("profileUser", profileUser);
+        Page<PostResponseDto> postPage = userFacade.getUserPosts(userId, PostState.PUBLISHED, page);
+        model.addAttribute("postPage", postPage);
+        return "user/profile";
+    }
 }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>유저 활동 내역</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script th:src="@{/js/motion.js}"></script>
+</head>
+<body>
+<header th:replace="~{layout/header :: header}"></header>
+<main>
+    <h3><span th:text="${profileUser.nickname}"></span>님의 공간</h3>
+    <p><span
+            th:text="${profileUser.role.name=='USER'?'일반 유저'
+            :profileUser.role.name=='KAKAO_USER'?'소셜 로그인 유저'
+            :profileUser.role.name=='ADMIN'?'일반 관리자'
+            :'슈퍼 관리자'}">
+    </span></p>
+    <p>가입일: <span th:text="${#temporals.format(profileUser.createdAt, 'yyyy-MM-dd')}"></span></p>
+    <br>
+    <p>총 게시글: <span th:text="${postPage.totalElements}"></span></p>
+    <table class="post-list">
+        <thead>
+        <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>작성일</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="post, iterStat : ${postPage.content}">
+            <td th:text="${post.id}"></td>
+            <td>
+                <a th:href="@{/post/{id}(id=${post.id})}" th:text="|${post.title} [${post.commentCount}]|"></a>
+            </td>
+            <td th:text="${post.authorName}"></td>
+            <td th:text="${#temporals.format(post.publishedAt, 'yyyy-MM-dd HH:mm')}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="pagination">
+        <span th:if="${postPage.hasPrevious()}">
+            <a th:href="@{/user/profile(page=${postPage.number-1})}">이전</a>
+        </span>
+        <span th:if="${postPage.totalPages}>0"
+              th:each="i : ${#numbers.sequence(0, postPage.totalPages-1)}">
+            <a th:href="@{/user/post(page=${i}, keyword=${keyword})}"
+               th:text="${i+1}"
+               th:classappend="${i==postPage.number ? 'active' : ''}">
+            </a>
+        </span>
+        <span th:if="${postPage.hasNext()}">
+            <a th:href="@{/user/post(page=${postPage.number+1})}">다음</a>
+        </span>
+    </div>
+    <a th:href="@{/post}">목록</a>
+</main>
+</body>
+</html>
