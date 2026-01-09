@@ -6,6 +6,8 @@ import com.example.demo.domain.post.dto.PostResponseDto;
 import com.example.demo.domain.post.service.PostFacade;
 import com.example.demo.domain.post.service.PostService;
 import com.example.demo.global.security.CustomUserDetails;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -52,8 +54,10 @@ public class PostController {
     @GetMapping("/{postId}")
     public String detail(@PathVariable Long postId,
                          @AuthenticationPrincipal CustomUserDetails userDetails,
+                         HttpServletRequest request,
+                         HttpServletResponse response,
                          Model model){
-        PostDetailResponseDto postDetail = postFacade.getPostDetail(postId, userDetails);
+        PostDetailResponseDto postDetail = postFacade.getPostDetail(postId, userDetails, request, response);
         model.addAttribute("postDetail", postDetail);
         return "post/detail";
     }

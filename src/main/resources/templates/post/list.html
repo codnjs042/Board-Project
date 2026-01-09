@@ -24,6 +24,7 @@
             <th>번호</th>
             <th>제목</th>
             <th>작성자</th>
+            <th>조회수</th>
             <th>작성일</th>
         </tr>
         </thead>
@@ -37,6 +38,7 @@
             <td>
                 <a th:href="@{/user/{id}/profile(id=${post.author.id})}" th:text="${post.authorName}"></a>
             </td>
+            <td th:text="${post.view}"></td>
             <td th:text="${#temporals.format(post.publishedAt, 'yyyy-MM-dd HH:mm')}"></td>
         </tr>
         </tbody>

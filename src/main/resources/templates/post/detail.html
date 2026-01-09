@@ -16,6 +16,7 @@
             <h3>게시글 상세</h3>
             <p><strong>제목 : </strong><span th:text="${post.title}"></span></p>
             <p><strong>작성자 : </strong><span th:text="|${post.authorName}(${#strings.substring(post.author.username, 0, 4)}${'*'.repeat(#strings.length(post.author.username)-4)})|"></span></p>
+            <p><strong>조회수 : </strong><span th:text="${post.view}"></span></p>
             <p><strong>작성일 : </strong>
                 <span th:text="${#temporals.format(post.publishedAt, 'yyyy-MM-dd HH:mm')}"></span>
                 <small th:if="${post.publishedAt!=post.updatedAt}">(수정됨)</small>

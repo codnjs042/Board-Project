@@ -59,6 +59,11 @@ public class PostService {
         return postRepository.findAllById(postId);
     }
 
+    @Transactional
+    public void incrementView(Long postId){
+        postRepository.updateView(postId);
+    }
+
     public Page<PostResponseDto> searchPosts(int page, String type, String keyword){
         Pageable pageable = PageRequest.of(page, pageSize,
                 Sort.by(Sort.Order.desc("type"), Sort.Order.desc("publishedAt")));

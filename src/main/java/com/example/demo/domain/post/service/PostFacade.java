@@ -10,7 +10,12 @@ import com.example.demo.domain.post.dto.PostResponseDto;
 import com.example.demo.global.exception.BusinessException;
 import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.global.security.CustomUserDetails;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.tool.schema.TargetType;
+import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -23,7 +28,13 @@ public class PostFacade {
     private final CommentService commentService;
     private final LikeService likeService;
 
-    public PostDetailResponseDto getPostDetail(Long postId, CustomUserDetails userDetails){
+    @Transactional
+    public PostDetailResponseDto getPostDetail(Long postId, CustomUserDetails userDetails, HttpServletRequest request, HttpServletResponse response){
+        if(isFirstView(postId, request)){
+            postService.incrementView(postId);
+            bakeCookie(postId, request, response);
+        }
+
         Post post = postService.findById(postId);
 
         if(!post.isPublished() || !post.isActive())
@@ -35,4 +46,40 @@ public class PostFacade {
 
         return new PostDetailResponseDto(PostResponseDto.from(post), isLiked, comment);
     }
+
+    private boolean isFirstView(Long postId, HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if(cookies!=null){
+            for (Cookie c : cookies){
+                if(c.getName().equals("postView")
+                        && c.getValue().contains("["+postId+"]"))
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    private void bakeCookie(Long postId, HttpServletRequest request, HttpServletResponse response){
+        String cookieName = "postView";
+        String newValue = "["+postId+"]";
+        Cookie[] cookies = request.getCookies();
+        Cookie targetCookie = null;
+
+        if(cookies!=null){
+            for(Cookie c : cookies){
+                if(c.getName().equals(cookieName)){
+                    targetCookie = c;
+                    targetCookie.setValue(c.getValue()+"_["+postId+"]");
+                    break;
+                }
+            }
+        }
+        if(targetCookie==null){
+            targetCookie = new Cookie(cookieName, "["+postId+"]");
+        }
+        targetCookie.setPath("/");
+        targetCookie.setMaxAge(60*60*24);
+        response.addCookie(targetCookie);
+    }
 }
+
