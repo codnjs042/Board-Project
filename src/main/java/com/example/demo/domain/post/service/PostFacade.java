@@ -28,13 +28,7 @@ public class PostFacade {
     private final CommentService commentService;
     private final LikeService likeService;
 
-    @Transactional
-    public PostDetailResponseDto getPostDetail(Long postId, CustomUserDetails userDetails, HttpServletRequest request, HttpServletResponse response){
-        if(isFirstView(postId, request)){
-            postService.incrementView(postId);
-            bakeCookie(postId, request, response);
-        }
-
+    public PostDetailResponseDto getPostDetail(Long postId, CustomUserDetails userDetails){
         Post post = postService.findById(postId);
 
         if(!post.isPublished() || !post.isActive())
@@ -45,41 +39,6 @@ public class PostFacade {
         Boolean isLiked = (userDetails!=null) && likeService.isLiked(userDetails.getId(), post.getId());
 
         return new PostDetailResponseDto(PostResponseDto.from(post), isLiked, comment);
-    }
-
-    private boolean isFirstView(Long postId, HttpServletRequest request){
-        Cookie[] cookies = request.getCookies();
-        if(cookies!=null){
-            for (Cookie c : cookies){
-                if(c.getName().equals("postView")
-                        && c.getValue().contains("["+postId+"]"))
-                    return false;
-            }
-        }
-        return true;
-    }
-
-    private void bakeCookie(Long postId, HttpServletRequest request, HttpServletResponse response){
-        String cookieName = "postView";
-        String newValue = "["+postId+"]";
-        Cookie[] cookies = request.getCookies();
-        Cookie targetCookie = null;
-
-        if(cookies!=null){
-            for(Cookie c : cookies){
-                if(c.getName().equals(cookieName)){
-                    targetCookie = c;
-                    targetCookie.setValue(c.getValue()+"_["+postId+"]");
-                    break;
-                }
-            }
-        }
-        if(targetCookie==null){
-            targetCookie = new Cookie(cookieName, "["+postId+"]");
-        }
-        targetCookie.setPath("/");
-        targetCookie.setMaxAge(60*60*24);
-        response.addCookie(targetCookie);
     }
 }
 

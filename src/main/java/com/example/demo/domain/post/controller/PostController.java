@@ -54,10 +54,8 @@ public class PostController {
     @GetMapping("/{postId}")
     public String detail(@PathVariable Long postId,
                          @AuthenticationPrincipal CustomUserDetails userDetails,
-                         HttpServletRequest request,
-                         HttpServletResponse response,
                          Model model){
-        PostDetailResponseDto postDetail = postFacade.getPostDetail(postId, userDetails, request, response);
+        PostDetailResponseDto postDetail = postFacade.getPostDetail(postId, userDetails);
         model.addAttribute("postDetail", postDetail);
         return "post/detail";
     }
