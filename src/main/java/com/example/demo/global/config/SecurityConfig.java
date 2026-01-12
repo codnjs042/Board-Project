@@ -1,6 +1,8 @@
 package com.example.demo.global.config;
 
+import com.example.demo.global.security.KakaoLogoutHandler;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +12,10 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Slf4j
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+    public final KakaoLogoutHandler kakaoLogoutHandler;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http
@@ -60,6 +65,7 @@ public class SecurityConfig {
 
                 .logout(logout -> logout
                         .logoutUrl("/logout")
+                        .addLogoutHandler(kakaoLogoutHandler)
                         .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")

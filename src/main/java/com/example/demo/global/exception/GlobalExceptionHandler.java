@@ -1,5 +1,6 @@
 package com.example.demo.global.exception;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +17,7 @@ import java.net.URI;
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(BusinessException.class)
+    @ExceptionHandler({BusinessException.class, JsonProcessingException.class})
     public String handleBusiness(HttpServletRequest request,
                                  RedirectAttributes redirectAttrs,
                                  BusinessException e){

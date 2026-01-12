@@ -31,8 +31,7 @@ public class UserService {
 
     @Transactional
     public void signup(UserSignupRequestDto dto){
-        Optional<User> existing = userRepository.findByUsername(dto.getUsername());
-
+        Optional<User> existing = findByUsername(dto.getUsername());
         if(existing.isPresent()){
             throw new BusinessException(ErrorCode.USER_ALREADY_EXIST);
         }
@@ -69,6 +68,10 @@ public class UserService {
         String encodePw = passwordEncoder.encode(dto.getNewPw());
         user.updatePw(encodePw);
         throw new ForceLogoutException(ErrorCode.FORCE_LOGOUT);
+    }
+
+    public Optional<User> findByUsername(String username){
+        return userRepository.findByUsername(username);
     }
 
     public User findById(Long userId){

@@ -6,11 +6,13 @@ import com.example.demo.domain.user.domain.User;
 import com.example.demo.domain.user.domain.UserRole;
 import com.example.demo.domain.user.domain.UserStatus;
 import com.example.demo.domain.user.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,19 +23,20 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class KakaoService {
     public final KakaoComponent kakaoComponent;
     public final UserRepository userRepository;
+    public final RestTemplate restTemplate;
+    public final ObjectMapper objectMapper;
 
-    public String tokenRequest(String code){
-        RestTemplate restTemplate = new RestTemplate();
-
+    public String requestToken(String code) throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
 
@@ -43,32 +46,22 @@ public class KakaoService {
         body.add("redirect_uri", kakaoComponent.getRedirectUri());
         body.add("code", code);
 
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
+        RequestEntity<MultiValueMap<String, String>> request = RequestEntity
+                .post("https://kauth.kakao.com/oauth/token")
+                .headers(headers)
+                .body(body);
+        ResponseEntity<String> response = restTemplate.exchange(request, String.class);
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                "https://kauth.kakao.com/oauth/token",
-                HttpMethod.POST,
-                requestEntity,
-                String.class
-        );
         String responseBody = response.getBody();
-        System.out.println(responseBody);
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(responseBody);
+        log.info("응답 바디 : {}", responseBody);
 
-            String accessToken = jsonNode.get("access_token").asText();
-            return accessToken;
+        JsonNode jsonNode = objectMapper.readTree(responseBody);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        String accessToken = jsonNode.get("access_token").asText();
+        return accessToken;
     }
 
-    public Map<String, Object> userInfo(String accessToken){
-        RestTemplate restTemplate = new RestTemplate();
-
+    public Map<String, Object> userInfo(String accessToken) throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
         headers.add("Authorization", "Bearer " + accessToken);
@@ -76,43 +69,32 @@ public class KakaoService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("property_keys", "[\"kakao_account.profile.nickname\"]");
 
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
+        RequestEntity<MultiValueMap<String, String>> request = RequestEntity
+                .post("https://kapi.kakao.com/v2/user/me")
+                .headers(headers)
+                .body(body);
+        ResponseEntity<String> response = restTemplate.exchange(request, String.class);
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                "https://kapi.kakao.com/v2/user/me",
-                HttpMethod.POST,
-                requestEntity,
-                String.class
-        );
         String responseBody = response.getBody();
-        System.out.println(responseBody);
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(responseBody);
+        log.info("응답 바디 : {}", responseBody);
 
-            Long id = jsonNode.get("id").asLong();
-            String nickname = jsonNode
-                    .path("kakao_account")
-                    .path("profile")
-                    .path("nickname")
-                    .asText();
+        JsonNode jsonNode = objectMapper.readTree(responseBody);
+        Long id = jsonNode.get("id").asLong();
+        String nickname = jsonNode
+                .path("kakao_account")
+                .path("profile")
+                .path("nickname")
+                .asText();
 
-            Map<String, Object> userInfo = new HashMap<>();
-            userInfo.put("id", id);
-            userInfo.put("nickname", nickname);
-
-            return userInfo;
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        Map<String, Object> userInfo = new HashMap<>();
+        userInfo.put("id", id);
+        userInfo.put("nickname", nickname);
+        return userInfo;
     }
 
     @Transactional
     public User signupOrGet(Map<String, Object> info){
-        String id = "k" + String.valueOf(info.get("id"));
+        String id = "k" + info.get("id");
         String nickname = (String) info.get("nickname");
 
         User user = userRepository.findByUsername(id)
@@ -132,50 +114,17 @@ public class KakaoService {
         return userRepository.save(user);
     }
 
-    public void login(String accessToken, User user, HttpServletRequest request){
-        CustomUserDetails userDetails = new CustomUserDetails(user);
-        Authentication auth = new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities()
-        );
-        SecurityContextHolder.getContext().setAuthentication(auth);
-
-        HttpSession session = request.getSession(true);
-        session.setAttribute(
-                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-                SecurityContextHolder.getContext()
-        );
-    }
-
-    @Transactional
-    public void disconnect(String target_id, String accessToken){
-        RestTemplate restTemplate = new RestTemplate();
-
+    public void logout(String accessToken){
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
 
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("target_id_type", "user_id");
-        body.add("target_id", Long.parseLong(target_id.substring(1)));
+        RequestEntity<Void> request = RequestEntity
+                .post("https://kapi.kakao.com/v1/user/logout")
+                .headers(headers)
+                .build();
+        ResponseEntity<String> response = restTemplate.exchange(request, String.class);
 
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                "https://kapi.kakao.com/v1/user/unlink",
-                HttpMethod.POST,
-                requestEntity,
-                String.class
-        );
         String responseBody = response.getBody();
-        System.out.println(responseBody);
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(responseBody);
-            Long id = jsonNode.get("id").asLong();
-            User user = userRepository.findByUsername(target_id)
-                    .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
-            user.updateStatusForce(UserStatus.DISABLED);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        log.info("응답 바디 : {}", responseBody);
     }
 }
