@@ -1,6 +1,5 @@
 package com.example.demo.global.exception;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +8,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import java.io.IOException;
@@ -17,7 +17,7 @@ import java.net.URI;
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler({BusinessException.class, JsonProcessingException.class})
+    @ExceptionHandler({BusinessException.class})
     public String handleBusiness(HttpServletRequest request,
                                  RedirectAttributes redirectAttrs,
                                  BusinessException e){
@@ -54,11 +54,20 @@ public class GlobalExceptionHandler {
         return "redirect:/user/login";
     }
 
+    @ExceptionHandler(RestClientException.class)
+    public String handleRestClient(HttpServletRequest request,
+                                 RedirectAttributes redirectAttrs,
+                                 RestClientException e){
+        redirectAttrs.addFlashAttribute("error", ErrorCode.KAKAO_API_ERROR.getMessage());
+        log.warn("Rest Client Exception: [{}] {} 요청 by {}", request.getMethod(), request.getRequestURI(), request.getUserPrincipal(), e);
+        return "redirect:/user/login";
+    }
+
     @ExceptionHandler(NoResourceFoundException.class)
     public void handleNoResourceFound(HttpServletRequest request,
-                                 HttpServletResponse response,
-                                 RedirectAttributes redirectAttrs,
-                                 NoResourceFoundException e) throws IOException {
+                                      HttpServletResponse response,
+                                      RedirectAttributes redirectAttrs,
+                                      NoResourceFoundException e) throws IOException {
         redirectAttrs.addFlashAttribute("error", e.getMessage());
         log.error("404 Not Found: [{}] {} 요청 by {}", request.getMethod(), request.getRequestURI(), request.getUserPrincipal(), e);
         response.sendError(HttpServletResponse.SC_NOT_FOUND);

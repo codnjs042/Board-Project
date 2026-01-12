@@ -15,7 +15,9 @@ public enum ErrorCode {
     FORCE_LOGOUT(HttpStatus.FOUND, "F002", "정책상 강제 로그아웃됩니다. 다시 로그인해주세요."),
     POST_NOT_FOUND(HttpStatus.BAD_REQUEST, "P002", "게시글이 존재하지 않습니다."),
     INVALID_PERMISSION(HttpStatus.BAD_REQUEST, "I002", "권한이 없습니다."),
-    COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "C001", "댓글이 존재하지 않습니다.");
+    COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "C001", "댓글이 존재하지 않습니다."),
+    DATA_PROCESSING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "D001", "데이터 처리 중 오류가 발생했습니다."),
+    KAKAO_API_ERROR(HttpStatus.BAD_GATEWAY, "K001", "카카오 API 호출 중 오류가 발생했습니다.");
 
     private final HttpStatus status;
     private final String code;
