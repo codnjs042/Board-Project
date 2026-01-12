@@ -36,16 +36,15 @@ public class CommentService {
     }
 
     @Transactional
-    public Comment connect(Long parentId, Long commentId){
+    public void connect(Long parentId, Long commentId){
         Comment parent = findById(parentId);
 
         Comment comment = findById(commentId);
 
         comment.updateParent(parent);
         parent.updateChild(comment);
-
-        return parent;
     }
+
     public Comment findById(Long commentId){
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
