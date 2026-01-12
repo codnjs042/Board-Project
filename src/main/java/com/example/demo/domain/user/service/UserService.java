@@ -46,6 +46,24 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
+    public User saveKakaoUser(String username, String nickname){
+        User user = findByUsername(username)
+                .map(u -> {
+                    u.updateStatusForce(UserStatus.ACTIVE);
+                    return u;
+                })
+                .orElseGet(() -> {
+                    User newUser = User.builder()
+                            .username(username)
+                            .nickname(nickname)
+                            .role(UserRole.KAKAO_USER)
+                            .build();
+                    return userRepository.save(newUser);
+                });
+        return userRepository.save(user);
+    }
+
     @Transactional(noRollbackFor = ForceLogoutException.class)
     public void updatePassword(UserPasswordRequestDto dto, CustomUserDetails userDetails){
         User user = userRepository.findById(userDetails.getId())

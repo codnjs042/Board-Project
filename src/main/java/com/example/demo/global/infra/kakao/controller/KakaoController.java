@@ -47,7 +47,7 @@ public class KakaoController {
                              HttpServletRequest request) throws JsonProcessingException {
         String token = kakaoService.requestToken(code);
         Map<String, Object> info = kakaoService.userInfo(token);
-        User user = kakaoService.signupOrGet(info);
+        User user = kakaoFacade.signupOrGet(info);
         securityUtil.kakaoLogin(user, token, request);
         return "redirect:/";
     }

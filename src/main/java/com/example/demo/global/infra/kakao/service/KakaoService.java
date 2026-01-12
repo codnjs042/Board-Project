@@ -32,7 +32,6 @@ import java.util.Map;
 @Transactional(readOnly = true)
 public class KakaoService {
     public final KakaoComponent kakaoComponent;
-    public final UserRepository userRepository;
     public final RestTemplate restTemplate;
     public final ObjectMapper objectMapper;
 
@@ -90,28 +89,6 @@ public class KakaoService {
         userInfo.put("id", id);
         userInfo.put("nickname", nickname);
         return userInfo;
-    }
-
-    @Transactional
-    public User signupOrGet(Map<String, Object> info){
-        String id = "k" + info.get("id");
-        String nickname = (String) info.get("nickname");
-
-        User user = userRepository.findByUsername(id)
-                .map(u -> {
-                    u.updateStatusForce(UserStatus.ACTIVE);
-                    return u;
-                })
-                .orElseGet(() -> {
-                    User newUser = User.builder()
-                            .username(id)
-                            .nickname(nickname)
-                            .role(UserRole.KAKAO_USER)
-                            .status(UserStatus.ACTIVE)
-                            .build();
-                    return userRepository.save(newUser);
-                });
-        return userRepository.save(user);
     }
 
     public void logout(String accessToken){

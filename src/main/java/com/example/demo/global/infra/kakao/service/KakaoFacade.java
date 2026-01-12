@@ -1,6 +1,7 @@
 package com.example.demo.global.infra.kakao.service;
 
 import com.example.demo.domain.user.domain.User;
+import com.example.demo.domain.user.domain.UserRole;
 import com.example.demo.domain.user.domain.UserStatus;
 import com.example.demo.domain.user.service.UserService;
 import com.example.demo.global.exception.ErrorCode;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -22,6 +25,15 @@ import org.springframework.web.client.RestTemplate;
 public class KakaoFacade {
     public final UserService userService;
     public final RestTemplate restTemplate;
+
+    @Transactional
+    public User signupOrGet(Map<String, Object> info){
+        String username = "k" + info.get("id");
+        String nickname = (String) info.get("nickname");
+
+        User user = userService.saveKakaoUser(username, nickname);
+        return user;
+    }
 
     @Transactional(noRollbackFor = ForceLogoutException.class)
     public void disconnect(String accessToken, User user) throws JsonProcessingException {
