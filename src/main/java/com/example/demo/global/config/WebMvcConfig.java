@@ -14,6 +14,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry){
         registry.addInterceptor(postViewIntercepter)
-                .addPathPatterns("/post/{postId}");
+                .addPathPatterns("/post/*")
+                .excludePathPatterns("/post/write");
     }
 }

@@ -24,18 +24,25 @@
             </tbody>
         </table>
         <div class="pagination">
-        <span th:if="${draftPage.hasPrevious()}">
-            <a th:href="@{/user/draft(page=${draftPage.number-1})}">이전</a>
+        <span>
+            <a th:href="@{/user/draft(id=${profileUser.id}, page=0)}">처음</a>
+        </span>
+            <span>
+            <a th:href="@{/user/draft(id=${profileUser.id}, page=${(draftPage.number-5<0)?0:draftPage.number-5})}">이전</a>
         </span>
             <span th:if="${draftPage.totalPages}>0"
-                  th:each="i : ${#numbers.sequence(0, draftPage.totalPages-1)}">
-            <a th:href="@{/user/draft(page=${i}, keyword=${keyword})}"
+                  th:each="i : ${#numbers.sequence(draftPage.number-draftPage.number%5, draftPage.number-draftPage.number%5+4>draftPage.getTotalPages()-1?draftPage.getTotalPages()-1:draftPage.number-draftPage.number%5+4)}">
+            <a th:href="@{/user/draft(id=${profileUser.id}, page=${i})}"
                th:text="${i+1}"
-               th:classappend="${i==draftPage.number ? 'active' : ''}">
+               class="page-num"
+               th:classappend="${i==draftPage.number?'active':''}">
             </a>
         </span>
-            <span th:if="${draftPage.hasNext()}">
-            <a th:href="@{/user/draft(page=${draftPage.number+1})}">다음</a>
+            <span>
+            <a th:href="@{/user/draft(id=${profileUser.id}, page=${(draftPage.number+5>draftPage.getTotalPages()-1)?draftPage.getTotalPages()-1:draftPage.number+5})}">다음</a>
+        </span>
+            <span>
+            <a th:href="@{/user/draft(id=${profileUser.id}, page=${draftPage.getTotalPages()-1})}">끝</a>
         </span>
         </div>
         <a th:href="@{/post/write}">뒤로가기</a>

@@ -30,6 +30,7 @@ public class PostController {
                        Model model){
         Page<PostResponseDto> postPage = postService.searchPosts(page, type, keyword);
         model.addAttribute("postPage", postPage);
+        model.addAttribute("type", type);
         model.addAttribute("keyword", keyword);
         return "post/list";
     }

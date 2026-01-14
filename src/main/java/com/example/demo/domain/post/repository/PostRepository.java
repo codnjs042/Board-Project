@@ -22,7 +22,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("select p from Post p " +
             "where p.state=:state " +
             "and p.status=:status " +
-            "and (:keyword is null or " +
+            "and (:keyword is null or :keyword='' or " +
                 "(:type='title' and p.title like %:keyword%) or" +
                 "(:type='content' and p.content like %:keyword%) or " +
                 "(:type='author' and p.author.nickname like %:keyword%))")
@@ -46,7 +46,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("select p from Post p " +
             "where p.state=:state " +
             "and (:status is null or p.status=:status) " +
-            "and (:keyword is null or " +
+            "and (:keyword is null or :keyword='' or " +
                 "(:type='title' and p.title like %:keyword%) or" +
                 "(:type='content' and p.content like %:keyword%) or " +
                 "(:type='id' and p.author.username like %:keyword%))")

@@ -11,7 +11,7 @@
 </head>
 <body>
     <header th:replace="~{layout/header :: header}"></header>
-    <main>
+    <main id="postList">
     <h3>게시글 목록</h3>
     <div sec:authorize="isAuthenticated()">
         <a th:href="@{/post/write}">글쓰기</a>
@@ -44,18 +44,25 @@
         </tbody>
     </table>
     <div class="pagination">
-        <span th:if="${postPage.hasPrevious()}">
-            <a th:href="@{/post(page=${postPage.number-1}, keyword=${keyword})}">이전</a>
+        <span>
+            <a th:href="@{/post(page=0, type=${type}, keyword=${keyword})}">처음</a>
+        </span>
+        <span>
+            <a th:href="@{/post(page=${(postPage.number-5<0)?0:postPage.number-5}, type=${type}, keyword=${keyword})}">이전</a>
         </span>
         <span th:if="${postPage.totalPages}>0"
-              th:each="i : ${#numbers.sequence(0, postPage.totalPages-1)}">
-            <a th:href="@{/post(page=${i}, keyword=${keyword})}"
+              th:each="i : ${#numbers.sequence(postPage.number-postPage.number%5, postPage.number-postPage.number%5+4>postPage.getTotalPages()-1?postPage.getTotalPages()-1:postPage.number-postPage.number%5+4)}">
+            <a th:href="@{/post(page=${i}, type=${type}, keyword=${keyword})}"
                th:text="${i+1}"
-               th:classappend="${i==postPage.number ? 'active' : ''}">
+               class="page-num"
+               th:classappend="${i==postPage.number?'active':''}">
             </a>
         </span>
-        <span th:if="${postPage.hasNext()}">
-            <a th:href="@{/post(page=${postPage.number+1}, keyword=${keyword})}">다음</a>
+        <span>
+            <a th:href="@{/post(page=${(postPage.number+5>postPage.getTotalPages()-1)?postPage.getTotalPages()-1:postPage.number+5}, type=${type}, keyword=${keyword})}">다음</a>
+        </span>
+        <span>
+            <a th:href="@{/post(page=${postPage.getTotalPages()-1}, type=${type}, keyword=${keyword})}">끝</a>
         </span>
     </div>
     <form th:action="@{/post}" method="get">
