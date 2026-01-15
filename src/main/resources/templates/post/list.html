@@ -59,10 +59,10 @@
             </a>
         </span>
         <span>
-            <a th:href="@{/post(page=${(postPage.number+5>postPage.getTotalPages()-1)?postPage.getTotalPages()-1:postPage.number+5}, type=${type}, keyword=${keyword})}">다음</a>
+            <a th:href="@{/post(page=${(postPage.getTotalPages()==0)?0:(postPage.number+5>postPage.getTotalPages()-1)?postPage.getTotalPages()-1:postPage.number+5}, type=${type}, keyword=${keyword})}">다음</a>
         </span>
         <span>
-            <a th:href="@{/post(page=${postPage.getTotalPages()-1}, type=${type}, keyword=${keyword})}">끝</a>
+            <a th:href="@{/post(page=${(postPage.getTotalPages()==0)?0:postPage.getTotalPages()-1}, type=${type}, keyword=${keyword})}">끝</a>
         </span>
     </div>
     <form th:action="@{/post}" method="get">

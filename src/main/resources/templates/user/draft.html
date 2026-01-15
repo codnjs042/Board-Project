@@ -12,10 +12,10 @@
     <main>
         <h3>임시 저장 목록</h3>
 
-        <p>total : <span th:text="${draftPage.totalElements}"></span></p>
+        <p>total : <span th:text="${postPage.totalElements}"></span></p>
         <table class="post-list">
             <tbody>
-            <tr th:each="post, iterStat : ${draftPage.content}">
+            <tr th:each="post, iterStat : ${postPage.content}">
                 <td>
                     <a th:href="@{/post/write(id=${post.id})}" th:text="${post.title}"></a>
                 </td>
@@ -25,24 +25,24 @@
         </table>
         <div class="pagination">
         <span>
-            <a th:href="@{/user/draft(id=${profileUser.id}, page=0)}">처음</a>
+            <a th:href="@{/user/draft(id=${user.id}, page=0)}">처음</a>
         </span>
             <span>
-            <a th:href="@{/user/draft(id=${profileUser.id}, page=${(draftPage.number-5<0)?0:draftPage.number-5})}">이전</a>
+            <a th:href="@{/user/draft(id=${user.id}, page=${(postPage.number-5<0)?0:postPage.number-5})}">이전</a>
         </span>
-            <span th:if="${draftPage.totalPages}>0"
-                  th:each="i : ${#numbers.sequence(draftPage.number-draftPage.number%5, draftPage.number-draftPage.number%5+4>draftPage.getTotalPages()-1?draftPage.getTotalPages()-1:draftPage.number-draftPage.number%5+4)}">
-            <a th:href="@{/user/draft(id=${profileUser.id}, page=${i})}"
+            <span th:if="${postPage.totalPages}>0"
+                  th:each="i : ${#numbers.sequence(postPage.number-postPage.number%5, postPage.number-postPage.number%5+4>postPage.getTotalPages()-1?postPage.getTotalPages()-1:postPage.number-postPage.number%5+4)}">
+            <a th:href="@{/user/draft(id=${user.id}, page=${i})}"
                th:text="${i+1}"
                class="page-num"
-               th:classappend="${i==draftPage.number?'active':''}">
+               th:classappend="${i==postPage.number?'active':''}">
             </a>
         </span>
             <span>
-            <a th:href="@{/user/draft(id=${profileUser.id}, page=${(draftPage.number+5>draftPage.getTotalPages()-1)?draftPage.getTotalPages()-1:draftPage.number+5})}">다음</a>
+            <a th:href="@{/user/draft(id=${user.id}, page=${(postPage.getTotalPages()==0)?0:(postPage.number+5>postPage.getTotalPages()-1)?postPage.getTotalPages()-1:postPage.number+5})}">다음</a>
         </span>
             <span>
-            <a th:href="@{/user/draft(id=${profileUser.id}, page=${draftPage.getTotalPages()-1})}">끝</a>
+            <a th:href="@{/user/draft(id=${user.id}, page=${(postPage.getTotalPages()==0)?0:postPage.getTotalPages()-1})}">끝</a>
         </span>
         </div>
         <a th:href="@{/post/write}">뒤로가기</a>

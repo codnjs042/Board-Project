@@ -56,10 +56,10 @@
             </a>
         </span>
         <span>
-            <a th:href="@{/user/{id}/profile(id=${profileUser.id}, page=${(postPage.number+5>postPage.getTotalPages()-1)?postPage.getTotalPages()-1:postPage.number+5})}">다음</a>
+            <a th:href="@{/user/{id}/profile(id=${profileUser.id}, page=${(postPage.getTotalPages()==0)?0:(postPage.number+5>postPage.getTotalPages()-1)?postPage.getTotalPages()-1:postPage.number+5})}">다음</a>
         </span>
         <span>
-            <a th:href="@{/user/{id}/profile(id=${profileUser.id}, page=${postPage.getTotalPages()-1})}">끝</a>
+            <a th:href="@{/user/{id}/profile(id=${profileUser.id}, page=${(postPage.getTotalPages()==0)?0:postPage.getTotalPages()-1})}">끝</a>
         </span>
     </div>
     <a th:href="@{/post}">목록</a>

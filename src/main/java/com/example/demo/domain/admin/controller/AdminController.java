@@ -46,6 +46,7 @@ public class AdminController {
                            Model model){
         Page<PostAdminResponseDto> postPage = adminFacade.getPosts(PostState.PUBLISHED, null, page, type, keyword);
         model.addAttribute("postPage", postPage);
+        model.addAttribute("type", type);
         model.addAttribute("keyword", keyword);
         return "admin/post";
     }

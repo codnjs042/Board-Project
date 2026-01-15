@@ -56,21 +56,27 @@
                     </table>
                 </form>
                 <div class="pagination">
-                    <span th:if="${userPage.hasPrevious()}">
-                        <a th:href="@{/admin/user(page=${userPage.number-1})}">이전</a>
+                    <span>
+                        <a th:href="@{/admin(page=0, keyword=${keyword})}">처음</a>
+                    </span>
+                    <span>
+                        <a th:href="@{/admin(page=${(userPage.number-5<0)?0:userPage.number-5}, keyword=${keyword})}">이전</a>
                     </span>
                     <span th:if="${userPage.totalPages}>0"
-                          th:each="i : ${#numbers.sequence(0, userPage.totalPages-1)}">
-                          <a th:href="@{/admin/user(page=${i}, keyword=${keyword})}"
-                             th:text="${i+1}"
-                             th:classappend="${i==userPage.number ? 'active' : ''}">
-                          </a>
+                          th:each="i : ${#numbers.sequence(userPage.number-userPage.number%5, userPage.number-userPage.number%5+4>userPage.getTotalPages()-1?userPage.getTotalPages()-1:userPage.number-userPage.number%5+4)}">
+                        <a th:href="@{/admin(page=${i}, keyword=${keyword})}"
+                           th:text="${i+1}"
+                           class="page-num"
+                           th:classappend="${i==userPage.number?'active':''}">
+                        </a>
                     </span>
-                    <span th:if="${userPage.hasNext()}">
-                          <a th:href="@{/admin/user(page=${userPage.number+1})}">다음</a>
+                    <span>
+                        <a th:href="@{/admin(page=${(userPage.getTotalPages()==0)?0:(userPage.number+5>userPage.getTotalPages()-1)?userPage.getTotalPages()-1:userPage.number+5}, keyword=${keyword})}">다음</a>
+                    </span>
+                    <span>
+                        <a th:href="@{/admin(page=${(userPage.getTotalPages()==0)?0:userPage.getTotalPages()-1}, keyword=${keyword})}">끝</a>
                     </span>
                 </div>
-
                 <form th:action="@{/admin}" method="get">
                     <input type="text" name="keyword" placeholder="아이디 or 닉네임 입력하세요" th:value="${keyword}"/>
                     <button type="submit">검색</button>

@@ -86,8 +86,8 @@ public class UserController {
     public String draft(@RequestParam(defaultValue="0") int page,
                         @AuthenticationPrincipal CustomUserDetails userDetails,
                         Model model){
-        Page<PostResponseDto> draftPage = userFacade.getUserPosts(userDetails.getId(), PostState.DRAFT, page);
-        model.addAttribute("draftPage", draftPage);
+        Page<PostResponseDto> postPage = userFacade.getUserPosts(userDetails.getId(), PostState.DRAFT, page);
+        model.addAttribute("postPage", postPage);
         return "user/draft";
     }
 
