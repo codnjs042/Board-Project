@@ -25,7 +25,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "and (:keyword is null or :keyword='' or " +
                 "(:type='title' and p.title like %:keyword%) or" +
                 "(:type='content' and p.content like %:keyword%) or " +
-                "(:type='author' and p.author.nickname like %:keyword%))")
+                "(:type='author' and p.authorName like %:keyword%))")
     Page<Post> searchPosts(@Param("state") PostState state,
                            @Param("status") PostStatus status,
                            @Param("type") String type,

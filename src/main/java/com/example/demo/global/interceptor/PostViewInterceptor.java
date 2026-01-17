@@ -12,7 +12,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class PostViewIntercepter implements HandlerInterceptor {
+public class PostViewInterceptor implements HandlerInterceptor {
     private final PostService postService;
 
     @Override

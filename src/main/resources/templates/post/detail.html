@@ -57,7 +57,7 @@
                 </form>
             </div>
             <div id="comments">
-                <div th:replace="fragment/commentList ::commentList(${comments})"></div>
+                <div th:replace="~{fragment/commentList ::commentList(${comments})}"></div>
             </div>
         </section>
     </main>
