@@ -2,27 +2,10 @@ server:
   port: 8081
 
 spring:
+  profiles:
+    active: dev
   datasource:
-    url: jdbc:mysql://localhost:3306/demo
     driver-class-name: com.mysql.cj.jdbc.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: false
   config:
     import:
       - "classpath:application-private.yml"
-
-logging:
-  level:
-    org.hibernate.SQL: info
-
-decorator:
-  datasource:
-    p6spy:
-      enable-logging: true
-      multiline: false
-      logging: slf4j
