@@ -9,3 +9,7 @@ spring:
   config:
     import:
       - "classpath:application-private.yml"
+  jpa:
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
