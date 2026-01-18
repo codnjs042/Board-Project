@@ -1,10 +1,12 @@
 package com.example.demo.domain.user.repository;
 
+import com.example.demo.domain.post.domain.Post;
 import com.example.demo.domain.user.domain.User;
 import com.example.demo.domain.user.domain.UserRole;
 import com.example.demo.domain.user.domain.UserStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,14 +19,28 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByStatus(UserStatus status);
 
     // 관리자용 사용자 정보 조회
-    @Query("select u from User u " +
+    @Query("select u.id from User u " +
             "where (:role is null or u.role=:role) " +
             "and (:status is null or u.status=:status) " +
             "and (:keyword is null or :keyword='' or " +
                 "(u.username like %:keyword%) or " +
                 "(u.nickname like %:keyword%))")
-    Page<User> searchUsersForAdmin(@Param("role") UserRole role,
+    List<Long> searchUsersForAdmin(@Param("role") UserRole role,
                                    @Param("status") UserStatus status,
                                    @Param("keyword") String keyword,
                                    Pageable pageable);
+
+    @Query("select count(u) from User u " +
+            "where (:role is null or u.role=:role) " +
+            "and (:status is null or u.status=:status) " +
+            "and (:keyword is null or :keyword='' or " +
+            "(u.username like %:keyword%) or " +
+            "(u.nickname like %:keyword%))")
+    long countSearchUsersForAdmin(@Param("role") UserRole role,
+                                  @Param("status") UserStatus status,
+                                  @Param("keyword") String keyword);
+
+    @Query("select u from User u " +
+            "where u.id in :ids")
+    List<User> findAllByIdIn(@Param("ids") List<Long> ids, Sort sort);
 }

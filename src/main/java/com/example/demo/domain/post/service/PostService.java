@@ -12,10 +12,7 @@ import com.example.demo.domain.user.domain.User;
 import com.example.demo.global.exception.BusinessException;
 import com.example.demo.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -61,14 +58,6 @@ public class PostService {
         postRepository.updateView(postId);
     }
 
-    public Page<PostResponseDto> searchPosts(int page, String type, String keyword){
-        Pageable pageable = PageRequest.of(page, pageSize,
-                Sort.by(Sort.Order.desc("type"), Sort.Order.desc("publishedAt"), Sort.Order.desc("id")));
-
-        return postRepository.searchPosts(PostState.PUBLISHED, PostStatus.ACTIVE, type, keyword, pageable)
-                .map(PostResponseDto::from);
-    }
-
     public PostResponseDto getPostForEdit(Long postId, User user){
         Post post = findById(postId);
 
@@ -101,17 +90,45 @@ public class PostService {
         post.updateStatus(PostStatus.DISABLED);
     }
 
+    public Page<PostResponseDto> searchPosts(int page, String type, String keyword){
+        Sort sort = Sort.by(Sort.Order.desc("type"), Sort.Order.desc("publishedAt"), Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page, pageSize, sort);
+
+        List<Long> ids = postRepository.searchPosts(PostState.PUBLISHED, PostStatus.ACTIVE, type, keyword, pageable);
+        if(ids.isEmpty())
+            return Page.empty(pageable);
+
+        List<Post> posts = postRepository.findAllByIdIn(ids, sort);
+        long total = postRepository.countSearchPosts(PostState.PUBLISHED, PostStatus.ACTIVE, type, keyword);
+
+        return new PageImpl<>(posts, pageable, total).map(PostResponseDto::from);
+    }
+
     public Page<PostResponseDto> getUserPosts(Long userId, PostState state, int page){
-        Pageable pageable = PageRequest.of(page, pageSize,
-                Sort.by(Sort.Order.desc(state==PostState.PUBLISHED ? "publishedAt" : "updatedAt"), Sort.Order.desc("id")));
-        return postRepository.findAllByUserId(userId, state, PostStatus.ACTIVE, pageable)
-                .map(PostResponseDto::from);
+        Sort sort = Sort.by(Sort.Order.desc(state==PostState.PUBLISHED ? "publishedAt" : "updatedAt"), Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page, pageSize, sort);
+
+        List<Long> ids = postRepository.findAllByUserId(userId, state, PostStatus.ACTIVE, pageable);
+        if(ids.isEmpty())
+            return Page.empty(pageable);
+
+        List<Post> posts = postRepository.findAllByIdIn(ids, sort);
+        long total = postRepository.countByAuthorId(userId, state, PostStatus.ACTIVE);
+
+        return new PageImpl<>(posts, pageable, total).map(PostResponseDto::from);
     }
 
     public Page<PostAdminResponseDto> searchPostsForAdmin(PostState state, PostStatus status, int page, String type, String keyword){
-        Pageable pageable = PageRequest.of(page, pageSize,
-                Sort.by(Sort.Order.desc("createdAt"), Sort.Order.desc("id")));
-        return postRepository.searchPostsForAdmin(state, status, type, keyword, pageable)
-                .map(PostAdminResponseDto::from);
+        Sort sort = Sort.by(Sort.Order.desc("createdAt"), Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page, pageSize, sort);
+
+        List<Long> ids = postRepository.searchPostsForAdmin(state, status, type, keyword, pageable);
+        if(ids.isEmpty())
+            return Page.empty(pageable);
+
+        List<Post> posts = postRepository.findAllByIdIn(ids, sort);
+        long total = postRepository.countSearchPostsForAdmin(state, status, type, keyword);
+
+        return new PageImpl<>(posts, pageable, total).map(PostAdminResponseDto::from);
     }
 }
