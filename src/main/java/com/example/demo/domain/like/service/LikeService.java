@@ -28,11 +28,11 @@ public class LikeService {
             Like like = existing.get();
             if(like.getStatus()== LikeStatus.ACTIVE) {
                 like.updateStatus(LikeStatus.DISABLED);
-                post.updateLikeCount(-1L);
+                post.updateLikeCount(-1);
             }
             else{
                 like.updateStatus(LikeStatus.ACTIVE);
-                post.updateLikeCount(1L);
+                post.updateLikeCount(1);
             }
         }
         else{
@@ -41,7 +41,7 @@ public class LikeService {
                     .post(post)
                     .build();
             likeRepository.save(newLike);
-            post.updateLikeCount(1L);
+            post.updateLikeCount(1);
         }
     }
 }

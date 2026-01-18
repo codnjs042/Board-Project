@@ -31,13 +31,13 @@ public class Post extends BaseEntity {
     private String authorName;
 
     @Column(nullable = false)
-    private Long view;
+    private int view;
 
     @Column(nullable = false)
-    private Long likeCount;
+    private int likeCount;
 
     @Column(nullable = false)
-    private Long commentCount;
+    private int commentCount;
 
     @Enumerated(EnumType.STRING)
     private PostType type;
@@ -57,23 +57,19 @@ public class Post extends BaseEntity {
         this.content=content;
         this.author=author;
         this.authorName=authorName;
-        this.view=0L;
-        this.likeCount=0L;
-        this.commentCount=0L;
+        this.view=0;
+        this.likeCount=0;
+        this.commentCount=0;
         this.type=type;
         this.state=state;
         this.status=(status==null)?PostStatus.ACTIVE:status;
+        this.publishedAt=(state==PostState.PUBLISHED)?LocalDateTime.now():null;
     }
 
     public void modify(String title, String content, PostType type){
         this.title=title;
         this.content=content;
         this.type=type;
-    }
-
-    public void upload(){
-        this.state=PostState.PUBLISHED;
-        this.publishedAt=LocalDateTime.now();
     }
 
     public boolean isAuthor(Long userId){
@@ -87,11 +83,11 @@ public class Post extends BaseEntity {
     public boolean isActive(){
         return status == PostStatus.ACTIVE;
     }
-    public void updateLikeCount(Long amount){
+    public void updateLikeCount(int amount){
         likeCount+=1;
     }
 
-    public void updateCommentCount(Long amount) {commentCount+=1;}
+    public void updateCommentCount(int amount) {commentCount+=1;}
 
     public void updateStatus(PostStatus status){
         this.status=status;

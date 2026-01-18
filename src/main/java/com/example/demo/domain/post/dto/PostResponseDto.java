@@ -14,9 +14,9 @@ public class PostResponseDto {
     private String content;
     private User author;
     private String authorName;
-    private Long view;
-    private Long likeCount;
-    private Long commentCount;
+    private int view;
+    private int likeCount;
+    private int commentCount;
     private PostState state;
     private PostType type;
     private LocalDateTime publishedAt;

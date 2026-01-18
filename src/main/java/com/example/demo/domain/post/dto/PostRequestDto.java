@@ -5,11 +5,15 @@ import com.example.demo.domain.post.domain.PostType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PostRequestDto {
     @NotBlank(message="제목을 입력하세요.")
     @Size(min=1, max=30)

@@ -16,9 +16,9 @@ public class PostAdminResponseDto {
     private String content;
     private User author;
     private String authorName;
-    private Long view;
-    private Long commentCount;
-    private Long likeCount;
+    private int view;
+    private int commentCount;
+    private int likeCount;
     private PostState state;
     private PostType type;
     private PostStatus status;

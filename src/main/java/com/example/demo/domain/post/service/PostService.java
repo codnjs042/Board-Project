@@ -41,13 +41,10 @@ public class PostService {
                     .build();
 
             postRepository.save(post);
-
         }else {
             post = findById(postId);
             post.modify(dto.getTitle(), dto.getContent(), dto.getType());
         }
-        if(dto.getState()==PostState.PUBLISHED)
-            post.upload();
     }
 
     public Post findById(Long postId){
@@ -66,7 +63,7 @@ public class PostService {
 
     public Page<PostResponseDto> searchPosts(int page, String type, String keyword){
         Pageable pageable = PageRequest.of(page, pageSize,
-                Sort.by(Sort.Order.desc("type"), Sort.Order.desc("publishedAt")));
+                Sort.by(Sort.Order.desc("type"), Sort.Order.desc("publishedAt"), Sort.Order.desc("id")));
 
         return postRepository.searchPosts(PostState.PUBLISHED, PostStatus.ACTIVE, type, keyword, pageable)
                 .map(PostResponseDto::from);
@@ -105,13 +102,15 @@ public class PostService {
     }
 
     public Page<PostResponseDto> getUserPosts(Long userId, PostState state, int page){
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(state==PostState.PUBLISHED ? "publishedAt" : "updatedAt").descending());
+        Pageable pageable = PageRequest.of(page, pageSize,
+                Sort.by(Sort.Order.desc(state==PostState.PUBLISHED ? "publishedAt" : "updatedAt"), Sort.Order.desc("id")));
         return postRepository.findAllByUserId(userId, state, PostStatus.ACTIVE, pageable)
                 .map(PostResponseDto::from);
     }
 
     public Page<PostAdminResponseDto> searchPostsForAdmin(PostState state, PostStatus status, int page, String type, String keyword){
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page, pageSize,
+                Sort.by(Sort.Order.desc("createdAt"), Sort.Order.desc("id")));
         return postRepository.searchPostsForAdmin(state, status, type, keyword, pageable)
                 .map(PostAdminResponseDto::from);
     }

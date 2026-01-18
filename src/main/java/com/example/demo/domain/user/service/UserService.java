@@ -107,7 +107,8 @@ public class UserService {
     }
 
     public Page<UserAdminResponseDto> searchUsersForAdmin(UserRole role, UserStatus status, String keyword, int page){
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page, pageSize,
+                Sort.by(Sort.Order.desc("createdAt"), Sort.Order.desc("id")));
         return userRepository.searchUsersForAdmin(role, status, keyword, pageable)
                 .map(UserAdminResponseDto::from);
     }

@@ -31,7 +31,7 @@ public class CommentService {
 
         commentRepository.save(comment);
 
-        post.updateCommentCount(1L);
+        post.updateCommentCount(1);
         return comment;
     }
 
@@ -75,6 +75,6 @@ public class CommentService {
             throw new BusinessException(ErrorCode.INVALID_PERMISSION);
 
         comment.updateStatus(CommentStatus.DISABLED);
-        comment.getPost().updateCommentCount(1L);
+        comment.getPost().updateCommentCount(1);
     }
 }
