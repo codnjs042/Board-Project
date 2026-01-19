@@ -54,7 +54,7 @@ public class AdminFacade {
 
 
     public Page<PostAdminResponseDto> getPosts(PostState state, PostStatus status, int page, String type, String keyword){
-        return postService.searchPostsForAdmin(state,status, page, type, keyword);
+        return postService.searchPostsForAdmin(state, status, page, type, keyword);
     }
 
     @Transactional
