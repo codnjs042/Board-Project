@@ -7,17 +7,13 @@
 - **Spring Boot 3.5.5**
 - **Spring Data JPA**
 - **Spring Security**
-- **Spring Validation**
-- **MySQL 8.0**
 
 ### Frontend
 - **Thymeleaf**
-- **Thymeleaf Extras SpringSecurity6**
+- **jQuery**
 
-### Tools
-- **Gradle**
-- **Lombok**
-- **P6Spy**
+### Database
+- **MySQL 8.0**
 
 ## ERD
 ```mermaid
@@ -82,7 +78,7 @@ erDiagram
 
 ### 1. 회원 기능 (User)
 * 회원가입 및 로그인 (Spring Security)
-* 일반 회원 가입 및 소셜 로그인 API
+* 일반 회원 가입 및 소셜 로그인 API(kakao)
 
 ### 2. 게시판 기능 (Post)
 * 게시글 등록, 수정, 삭제, 조회
@@ -90,8 +86,8 @@ erDiagram
 * 게시글 임시저장 및 발행 기능
 
 ### 3. 댓글 및 대댓글 (Comment)
-* 게시글별 댓글 작성 및 관리
-* 부모-자식 구조를 활용한 계층형 대댓글 구현
+* 댓글 등록, 수정, 삭제, 조회
+* 계층 구조 답글 기능 구현
 
 ### 4. 좋아요 (Like)
 * 게시글 좋아요/취소 기능
